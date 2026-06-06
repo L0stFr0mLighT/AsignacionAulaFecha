@@ -1,0 +1,79 @@
+Fundamentos de Economía y Administración de Empresas | Alumnos = 351 | Slot = 1 Jun 10:00 | CapacidadAsignada = 351 | Exceso = 0 | NAulas = 8 | Aulas = Artá 6001 6101 6102 6106 6201 6205 6206 
+Contabilidad Financiera y de Sociedades | Alumnos = 23 | Slot = 4 Jun 15:00 | CapacidadAsignada = 45 | Exceso = 22 | NAulas = 1 | Aulas = 3202 
+Geometría 3D para Informática Gráfica | Alumnos = 53 | Slot = 5 Jun 10:00 | CapacidadAsignada = 150 | Exceso = 97 | NAulas = 1 | Aulas = 3001 
+Valoración de Activos e Inversiones | Alumnos = 20 | Slot = 4 Jun 15:00 | CapacidadAsignada = 55 | Exceso = 35 | NAulas = 1 | Aulas = 3102-3103 
+Ecuaciones Diferenciales | Alumnos = 64 | Slot = 5 Jun 15:00 | CapacidadAsignada = 64 | Exceso = 0 | NAulas = 1 | Aulas = 3104 
+Programming Project | Alumnos = 124 | Slot = 8 Jun 10:00 | CapacidadAsignada = 150 | Exceso = 26 | NAulas = 1 | Aulas = 3001 
+Fotografía Computacional | Alumnos = 40 | Slot = 5 Jun 09:00 | CapacidadAsignada = 60 | Exceso = 20 | NAulas = 2 | Aulas = Verdes Altamira 
+Derecho de Empresa | Alumnos = 33 | Slot = 5 Jun 15:00 | CapacidadAsignada = 55 | Exceso = 22 | NAulas = 1 | Aulas = 3102-3103 
+Probabilidades y Estadística I | Alumnos = 371 | Slot = 2 Jun 10:00 | CapacidadAsignada = 380 | Exceso = 9 | NAulas = 7 | Aulas = 3104 3202 3203 3204 3206 Verdes 5001 
+Aplicaciones de la Biometría de la Voz | Alumnos = 40 | Slot = 4 Jun 10:00 | CapacidadAsignada = 72 | Exceso = 32 | NAulas = 1 | Aulas = 3204 
+Programación Declarativa: Lógica y Restricciones | Alumnos = 327 | Slot = 1 Jun 10:00 | CapacidadAsignada = 329 | Exceso = 2 | NAulas = 6 | Aulas = Verdes 5001 5002 Altamira 5101 5102 
+Visualización de la Información | Alumnos = 41 | Slot = 3 Jun 15:00 | CapacidadAsignada = 64 | Exceso = 23 | NAulas = 1 | Aulas = 3104 
+Concurrencia | Alumnos = 396 | Slot = 1 Jun 10:00 | CapacidadAsignada = 408 | Exceso = 12 | NAulas = 8 | Aulas = 3102-3103 3104 3202 3203 3204 3206 Monje Nerja 
+Adquisición y Procesamiento Numérico de Datos | Alumnos = 59 | Slot = 2 Jun 10:00 | CapacidadAsignada = 67 | Exceso = 8 | NAulas = 2 | Aulas = Monje Nerja 
+Procesamiento Digital de la Señal | Alumnos = 23 | Slot = 4 Jun 10:00 | CapacidadAsignada = 28 | Exceso = 5 | NAulas = 1 | Aulas = Monje 
+Gestión y Control de Calidad | Alumnos = 24 | Slot = 3 Jun 10:00 | CapacidadAsignada = 58 | Exceso = 34 | NAulas = 1 | Aulas = 5001 
+English for Professional and Academic Communication | Alumnos = 138 | Slot = 1 Jun 10:00 | CapacidadAsignada = 150 | Exceso = 12 | NAulas = 1 | Aulas = 3001 
+Programación II | Alumnos = 540 | Slot = 15 Jun 15:00 | CapacidadAsignada = 541 | Exceso = 1 | NAulas = 12 | Aulas = Verdes 5002 5005 Altamira 5102 Cogull Artá 6001 6101 6102 6105 6106 
+Fundamentos de los Computadores | Alumnos = 71 | Slot = 5 Jun 15:00 | CapacidadAsignada = 150 | Exceso = 79 | NAulas = 1 | Aulas = 3001 
+Inteligencia Artificial y Ciencia Abierta en Ingeniería de Software Científico | Alumnos = 62 | Slot = 5 Jun 09:00 | CapacidadAsignada = 64 | Exceso = 2 | NAulas = 1 | Aulas = 3104 
+Econometría | Alumnos = 22 | Slot = 10 Jun 10:00 | CapacidadAsignada = 55 | Exceso = 33 | NAulas = 1 | Aulas = 3203 
+Sistemas Orientados a Servicios | Alumnos = 308 | Slot = 1 Jun 15:00 | CapacidadAsignada = 344 | Exceso = 36 | NAulas = 7 | Aulas = 6201 6202 6205 6206 6302 6305 6306 
+Programación Funcional | Alumnos = 50 | Slot = 4 Jun 15:00 | CapacidadAsignada = 150 | Exceso = 100 | NAulas = 1 | Aulas = 3001 
+Robótica | Alumnos = 37 | Slot = 3 Jun 15:00 | CapacidadAsignada = 55 | Exceso = 18 | NAulas = 1 | Aulas = 3102-3103 
+Robótica y Percepción Computacional | Alumnos = 41 | Slot = 5 Jun 09:00 | CapacidadAsignada = 67 | Exceso = 26 | NAulas = 2 | Aulas = Monje Nerja 
+Arquitectura de Computadores | Alumnos = 585 | Slot = 1 Jun 15:00 | CapacidadAsignada = 592 | Exceso = 7 | NAulas = 12 | Aulas = 5001 5002 5005 Altamira 5101 5102 Cogull 6001 6101 6102 6105 6106 
+Seguridad de las Tecnologías de la Información | Alumnos = 60 | Slot = 4 Jun 10:00 | CapacidadAsignada = 150 | Exceso = 90 | NAulas = 1 | Aulas = 3001 
+Data Analytics | Alumnos = 23 | Slot = 11 Jun 15:00 | CapacidadAsignada = 64 | Exceso = 41 | NAulas = 1 | Aulas = 3104 
+Introducción a las Finanzas | Alumnos = 35 | Slot = 3 Jun 10:00 | CapacidadAsignada = 39 | Exceso = 4 | NAulas = 1 | Aulas = Nerja 
+Aprendizaje Automático II | Alumnos = 45 | Slot = 12 Jun 15:00 | CapacidadAsignada = 72 | Exceso = 27 | NAulas = 1 | Aulas = 3204 
+Topología | Alumnos = 76 | Slot = 2 Jun 15:00 | CapacidadAsignada = 100 | Exceso = 24 | NAulas = 2 | Aulas = 3202 3203 
+Programming Scalable Systems | Alumnos = 74 | Slot = 4 Jun 10:00 | CapacidadAsignada = 119 | Exceso = 45 | NAulas = 2 | Aulas = 3102-3103 3104 
+Sistemas Inteligentes | Alumnos = 173 | Slot = 16 Jun 10:00 | CapacidadAsignada = 177 | Exceso = 4 | NAulas = 4 | Aulas = 3206 5102 Cogull Artá 
+Análisis de Estados Financieros | Alumnos = 27 | Slot = 3 Jun 15:00 | CapacidadAsignada = 45 | Exceso = 18 | NAulas = 1 | Aulas = 3202 
+Matemática Discreta III | Alumnos = 19 | Slot = 12 Jun 15:00 | CapacidadAsignada = 45 | Exceso = 26 | NAulas = 1 | Aulas = 3202 
+Ampliación de Macroeconomía | Alumnos = 21 | Slot = 15 Jun 12:00 | CapacidadAsignada = 36 | Exceso = 15 | NAulas = 1 | Aulas = Verdes 
+Probabilidades y Estadística II | Alumnos = 441 | Slot = 16 Jun 15:00 | CapacidadAsignada = 458 | Exceso = 17 | NAulas = 10 | Aulas = Altamira 5101 5102 Cogull 6001 6101 6102 6105 6106 6201 
+Régimen Fiscal | Alumnos = 21 | Slot = 9 Jun 15:00 | CapacidadAsignada = 64 | Exceso = 43 | NAulas = 1 | Aulas = 3104 
+Multimedia | Alumnos = 62 | Slot = 2 Jun 15:00 | CapacidadAsignada = 64 | Exceso = 2 | NAulas = 1 | Aulas = 3104 
+Interacción Persona-Ordenador | Alumnos = 355 | Slot = 16 Jun 10:00 | CapacidadAsignada = 359 | Exceso = 4 | NAulas = 8 | Aulas = Monje Nerja Verdes 5001 5002 5005 Altamira 5101 
+Matemática Discreta II | Alumnos = 114 | Slot = 15 Jun 15:00 | CapacidadAsignada = 139 | Exceso = 25 | NAulas = 3 | Aulas = Monje 5001 5101 
+Ingeniería de Protocolos de Comunicaciones | Alumnos = 46 | Slot = 10 Jun 10:00 | CapacidadAsignada = 64 | Exceso = 18 | NAulas = 1 | Aulas = 3104 
+Economía Mundial, Española y Regional | Alumnos = 25 | Slot = 15 Jun 12:00 | CapacidadAsignada = 39 | Exceso = 14 | NAulas = 1 | Aulas = Nerja 
+Proyecto de Instalación Informática | Alumnos = 253 | Slot = 1 Jun 15:00 | CapacidadAsignada = 263 | Exceso = 10 | NAulas = 6 | Aulas = 3102-3103 3203 3206 Monje Nerja Verdes 
+Computabilidad: Fundamentos y Aplicaciones | Alumnos = 47 | Slot = 9 Jun 15:00 | CapacidadAsignada = 55 | Exceso = 8 | NAulas = 1 | Aulas = 3102-3103 
+Computación Social y Personalización | Alumnos = 54 | Slot = 2 Jun 10:00 | CapacidadAsignada = 55 | Exceso = 1 | NAulas = 1 | Aulas = 3102-3103 
+Estructura de Computadores | Alumnos = 56 | Slot = 3 Jun 15:00 | CapacidadAsignada = 150 | Exceso = 94 | NAulas = 1 | Aulas = 3001 
+Fundamentos de Gestión de TI en la Empresa | Alumnos = 298 | Slot = 15 Jun 15:00 | CapacidadAsignada = 341 | Exceso = 43 | NAulas = 6 | Aulas = 3102-3103 3104 3202 3203 3204 3206 
+Teoría de la Información y la Codificación | Alumnos = 50 | Slot = 10 Jun 10:00 | CapacidadAsignada = 55 | Exceso = 5 | NAulas = 1 | Aulas = 3102-3103 
+Computadores Personales | Alumnos = 91 | Slot = 11 Jun 15:00 | CapacidadAsignada = 100 | Exceso = 9 | NAulas = 2 | Aulas = 3202 3203 
+Arquitectura del Data Warehouse | Alumnos = 57 | Slot = 16 Jun 15:00 | CapacidadAsignada = 79 | Exceso = 22 | NAulas = 1 | Aulas = 5002 
+Gestión de Proyetos Informáticos | Alumnos = 49 | Slot = 9 Jun 12:00 | CapacidadAsignada = 150 | Exceso = 101 | NAulas = 1 | Aulas = 3001 
+Sistemas Digitales | Alumnos = 364 | Slot = 15 Jun 12:00 | CapacidadAsignada = 369 | Exceso = 5 | NAulas = 7 | Aulas = 3102-3103 3104 3202 3203 3204 3206 Monje 
+Algoritmos y Estructura de Datos | Alumnos = 56 | Slot = 12 Jun 15:00 | CapacidadAsignada = 64 | Exceso = 8 | NAulas = 1 | Aulas = 3104 
+Estructuras Algebraicas | Alumnos = 57 | Slot = 11 Jun 15:00 | CapacidadAsignada = 150 | Exceso = 93 | NAulas = 1 | Aulas = 3001 
+Sistemas Dinámicos: Caos y Fractales | Alumnos = 41 | Slot = 10 Jun 10:00 | CapacidadAsignada = 150 | Exceso = 109 | NAulas = 1 | Aulas = 3001 
+Ingeniería del Software I | Alumnos = 258 | Slot = 16 Jun 15:00 | CapacidadAsignada = 270 | Exceso = 12 | NAulas = 6 | Aulas = 3104 3202 Monje Nerja Verdes 5001 
+Ingeniería del Software | Alumnos = 52 | Slot = 2 Jun 15:00 | CapacidadAsignada = 150 | Exceso = 98 | NAulas = 1 | Aulas = 3001 
+Bases de Datos II | Alumnos = 41 | Slot = 9 Jun 15:00 | CapacidadAsignada = 150 | Exceso = 109 | NAulas = 1 | Aulas = 3001 
+Español para Extranjeros | Alumnos = 11 | Slot = 5 Jun 09:00 | CapacidadAsignada = 150 | Exceso = 139 | NAulas = 1 | Aulas = 3001 
+Aspectos Sociales, Éticos y Legales de los Datos y la IA | Alumnos = 52 | Slot = 2 Jun 10:00 | CapacidadAsignada = 150 | Exceso = 98 | NAulas = 1 | Aulas = 3001 
+Sistemas Operativos | Alumnos = 64 | Slot = 15 Jun 10:00 | CapacidadAsignada = 100 | Exceso = 36 | NAulas = 2 | Aulas = 3202 3203 
+Redes de Computadores | Alumnos = 328 | Slot = 1 Jun 15:00 | CapacidadAsignada = 331 | Exceso = 3 | NAulas = 4 | Aulas = 3001 3104 3202 3204 
+Minería de Datos | Alumnos = 52 | Slot = 2 Jun 15:00 | CapacidadAsignada = 55 | Exceso = 3 | NAulas = 1 | Aulas = 3102-3103 
+Redes y Comunicaciones | Alumnos = 52 | Slot = 9 Jun 15:00 | CapacidadAsignada = 67 | Exceso = 15 | NAulas = 2 | Aulas = Monje Nerja 
+Métodos Cuantitativos para la Empresa | Alumnos = 37 | Slot = 3 Jun 10:00 | CapacidadAsignada = 55 | Exceso = 18 | NAulas = 1 | Aulas = 3102-3103 
+Español Profesional y Académico | Alumnos = 96 | Slot = 16 Jun 10:00 | CapacidadAsignada = 119 | Exceso = 23 | NAulas = 2 | Aulas = 3102-3103 3104 
+Dirección y Gestión de Recursos Humanos | Alumnos = 20 | Slot = 12 Jun 10:00 | CapacidadAsignada = 55 | Exceso = 35 | NAulas = 1 | Aulas = 3102-3103 
+Cálculo | Alumnos = 495 | Slot = 3 Jun 10:00 | CapacidadAsignada = 500 | Exceso = 5 | NAulas = 8 | Aulas = 3001 3104 3202 3203 3204 3206 Monje Verdes 
+Cálculo II | Alumnos = 127 | Slot = 15 Jun 15:00 | CapacidadAsignada = 150 | Exceso = 23 | NAulas = 1 | Aulas = 3001 
+Desarrollo de Recursos Semánticos, Interoperables y Abiertos | Alumnos = 3 | Slot = 15 Jun 10:00 | CapacidadAsignada = 64 | Exceso = 61 | NAulas = 1 | Aulas = 3104 
+Dirección de Producción | Alumnos = 20 | Slot = 15 Jun 12:00 | CapacidadAsignada = 150 | Exceso = 130 | NAulas = 1 | Aulas = 3001 
+Infraestructuras de Big Data | Alumnos = 51 | Slot = 15 Jun 10:00 | CapacidadAsignada = 55 | Exceso = 4 | NAulas = 1 | Aulas = 3102-3103 
+Modelización | Alumnos = 49 | Slot = 15 Jun 10:00 | CapacidadAsignada = 150 | Exceso = 101 | NAulas = 1 | Aulas = 3001 
+Sistemas Distribuidos | Alumnos = 300 | Slot = 16 Jun 10:00 | CapacidadAsignada = 322 | Exceso = 22 | NAulas = 4 | Aulas = 3001 3202 3203 3204 
+Bases de Datos | Alumnos = 369 | Slot = 16 Jun 15:00 | CapacidadAsignada = 382 | Exceso = 13 | NAulas = 5 | Aulas = 3001 3102-3103 3203 3204 3206 
+Bases de Datos I | Alumnos = 55 | Slot = 12 Jun 15:00 | CapacidadAsignada = 150 | Exceso = 95 | NAulas = 1 | Aulas = 3001 
+Traductores de Lenguajes | Alumnos = 57 | Slot = 8 Jun 15:00 | CapacidadAsignada = 150 | Exceso = 93 | NAulas = 1 | Aulas = 3001 
+Comercio Exterior | Alumnos = 18 | Slot = 12 Jun 10:00 | CapacidadAsignada = 150 | Exceso = 132 | NAulas = 1 | Aulas = 3001 

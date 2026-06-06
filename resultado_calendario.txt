@@ -1,0 +1,79 @@
+Fundamentos de Economía y Administración de Empresas | Alumnos = 351 | Slot original = 1 Jun 10:00 | Slot asignado = 1 Jun 10:00
+Contabilidad Financiera y de Sociedades | Alumnos = 23 | Slot original = 1 Jun 10:00 | Slot asignado = 4 Jun 15:00
+Geometría 3D para Informática Gráfica | Alumnos = 53 | Slot original = 1 Jun 10:00 | Slot asignado = 5 Jun 10:00
+Valoración de Activos e Inversiones | Alumnos = 20 | Slot original = 1 Jun 15:00 | Slot asignado = 4 Jun 15:00
+Ecuaciones Diferenciales | Alumnos = 64 | Slot original = 1 Jun 15:00 | Slot asignado = 5 Jun 15:00
+Programming Project | Alumnos = 124 | Slot original = 1 Jun 15:00 | Slot asignado = 8 Jun 10:00
+Fotografía Computacional | Alumnos = 40 | Slot original = 1 Jun 15:00 | Slot asignado = 5 Jun 09:00
+Derecho de Empresa | Alumnos = 33 | Slot original = 2 Jun 10:00 | Slot asignado = 5 Jun 15:00
+Probabilidades y Estadística I | Alumnos = 371 | Slot original = 2 Jun 10:00 | Slot asignado = 2 Jun 10:00
+Aplicaciones de la Biometría de la Voz | Alumnos = 40 | Slot original = 2 Jun 10:00 | Slot asignado = 4 Jun 10:00
+Programación Declarativa: Lógica y Restricciones | Alumnos = 327 | Slot original = 2 Jun 15:00 | Slot asignado = 1 Jun 10:00
+Visualización de la Información | Alumnos = 41 | Slot original = 2 Jun 15:00 | Slot asignado = 3 Jun 15:00
+Concurrencia | Alumnos = 396 | Slot original = 3 Jun 10:00 | Slot asignado = 1 Jun 10:00
+Adquisición y Procesamiento Numérico de Datos | Alumnos = 59 | Slot original = 3 Jun 15:00 | Slot asignado = 2 Jun 10:00
+Procesamiento Digital de la Señal | Alumnos = 23 | Slot original = 3 Jun 15:00 | Slot asignado = 4 Jun 10:00
+Gestión y Control de Calidad | Alumnos = 24 | Slot original = 3 Jun 15:00 | Slot asignado = 3 Jun 10:00
+English for Professional and Academic Communication | Alumnos = 138 | Slot original = 3 Jun 15:00 | Slot asignado = 1 Jun 10:00
+Programación II | Alumnos = 540 | Slot original = 4 Jun 10:00 | Slot asignado = 15 Jun 15:00
+Fundamentos de los Computadores | Alumnos = 71 | Slot original = 4 Jun 10:00 | Slot asignado = 5 Jun 15:00
+Inteligencia Artificial y Ciencia Abierta en Ingeniería de Software Científico | Alumnos = 62 | Slot original = 4 Jun 10:00 | Slot asignado = 5 Jun 09:00
+Econometría | Alumnos = 22 | Slot original = 4 Jun 12:00 | Slot asignado = 10 Jun 10:00
+Sistemas Orientados a Servicios | Alumnos = 308 | Slot original = 4 Jun 15:00 | Slot asignado = 1 Jun 15:00
+Programación Funcional | Alumnos = 50 | Slot original = 4 Jun 15:00 | Slot asignado = 4 Jun 15:00
+Robótica | Alumnos = 37 | Slot original = 4 Jun 15:00 | Slot asignado = 3 Jun 15:00
+Robótica y Percepción Computacional | Alumnos = 41 | Slot original = 4 Jun 15:00 | Slot asignado = 5 Jun 09:00
+Arquitectura de Computadores | Alumnos = 585 | Slot original = 5 Jun 09:00 | Slot asignado = 1 Jun 15:00
+Seguridad de las Tecnologías de la Información | Alumnos = 60 | Slot original = 5 Jun 10:00 | Slot asignado = 4 Jun 10:00
+Data Analytics | Alumnos = 23 | Slot original = 5 Jun 10:00 | Slot asignado = 11 Jun 15:00
+Introducción a las Finanzas | Alumnos = 35 | Slot original = 5 Jun 15:00 | Slot asignado = 3 Jun 10:00
+Aprendizaje Automático II | Alumnos = 45 | Slot original = 5 Jun 15:00 | Slot asignado = 12 Jun 15:00
+Topología | Alumnos = 76 | Slot original = 5 Jun 15:00 | Slot asignado = 2 Jun 15:00
+Programming Scalable Systems | Alumnos = 74 | Slot original = 5 Jun 15:00 | Slot asignado = 4 Jun 10:00
+Sistemas Inteligentes | Alumnos = 173 | Slot original = 8 Jun 10:00 | Slot asignado = 16 Jun 10:00
+Análisis de Estados Financieros | Alumnos = 27 | Slot original = 8 Jun 10:00 | Slot asignado = 3 Jun 15:00
+Matemática Discreta III | Alumnos = 19 | Slot original = 8 Jun 10:00 | Slot asignado = 12 Jun 15:00
+Ampliación de Macroeconomía | Alumnos = 21 | Slot original = 8 Jun 15:00 | Slot asignado = 15 Jun 12:00
+Probabilidades y Estadística II | Alumnos = 441 | Slot original = 8 Jun 15:00 | Slot asignado = 16 Jun 15:00
+Régimen Fiscal | Alumnos = 21 | Slot original = 8 Jun 15:00 | Slot asignado = 9 Jun 15:00
+Multimedia | Alumnos = 62 | Slot original = 8 Jun 15:00 | Slot asignado = 2 Jun 15:00
+Interacción Persona-Ordenador | Alumnos = 355 | Slot original = 9 Jun 10:00 | Slot asignado = 16 Jun 10:00
+Matemática Discreta II | Alumnos = 114 | Slot original = 9 Jun 10:00 | Slot asignado = 15 Jun 15:00
+Ingeniería de Protocolos de Comunicaciones | Alumnos = 46 | Slot original = 9 Jun 10:00 | Slot asignado = 10 Jun 10:00
+Economía Mundial, Española y Regional | Alumnos = 25 | Slot original = 9 Jun 12:00 | Slot asignado = 15 Jun 12:00
+Proyecto de Instalación Informática | Alumnos = 253 | Slot original = 9 Jun 15:00 | Slot asignado = 1 Jun 15:00
+Computabilidad: Fundamentos y Aplicaciones | Alumnos = 47 | Slot original = 9 Jun 15:00 | Slot asignado = 9 Jun 15:00
+Computación Social y Personalización | Alumnos = 54 | Slot original = 10 Jun 10:00 | Slot asignado = 2 Jun 10:00
+Estructura de Computadores | Alumnos = 56 | Slot original = 10 Jun 10:00 | Slot asignado = 3 Jun 15:00
+Fundamentos de Gestión de TI en la Empresa | Alumnos = 298 | Slot original = 10 Jun 10:00 | Slot asignado = 15 Jun 15:00
+Teoría de la Información y la Codificación | Alumnos = 50 | Slot original = 10 Jun 10:00 | Slot asignado = 10 Jun 10:00
+Computadores Personales | Alumnos = 91 | Slot original = 10 Jun 15:00 | Slot asignado = 11 Jun 15:00
+Arquitectura del Data Warehouse | Alumnos = 57 | Slot original = 10 Jun 15:00 | Slot asignado = 16 Jun 15:00
+Gestión de Proyetos Informáticos | Alumnos = 49 | Slot original = 10 Jun 15:00 | Slot asignado = 9 Jun 12:00
+Sistemas Digitales | Alumnos = 364 | Slot original = 11 Jun 10:00 | Slot asignado = 15 Jun 12:00
+Algoritmos y Estructura de Datos | Alumnos = 56 | Slot original = 11 Jun 10:00 | Slot asignado = 12 Jun 15:00
+Estructuras Algebraicas | Alumnos = 57 | Slot original = 11 Jun 10:00 | Slot asignado = 11 Jun 15:00
+Sistemas Dinámicos: Caos y Fractales | Alumnos = 41 | Slot original = 11 Jun 10:00 | Slot asignado = 10 Jun 10:00
+Ingeniería del Software I | Alumnos = 258 | Slot original = 11 Jun 15:00 | Slot asignado = 16 Jun 15:00
+Ingeniería del Software | Alumnos = 52 | Slot original = 11 Jun 15:00 | Slot asignado = 2 Jun 15:00
+Bases de Datos II | Alumnos = 41 | Slot original = 11 Jun 15:00 | Slot asignado = 9 Jun 15:00
+Español para Extranjeros | Alumnos = 11 | Slot original = 11 Jun 15:00 | Slot asignado = 5 Jun 09:00
+Aspectos Sociales, Éticos y Legales de los Datos y la IA | Alumnos = 52 | Slot original = 12 Jun 10:00 | Slot asignado = 2 Jun 10:00
+Sistemas Operativos | Alumnos = 64 | Slot original = 12 Jun 10:00 | Slot asignado = 15 Jun 10:00
+Redes de Computadores | Alumnos = 328 | Slot original = 12 Jun 10:00 | Slot asignado = 1 Jun 15:00
+Minería de Datos | Alumnos = 52 | Slot original = 12 Jun 10:00 | Slot asignado = 2 Jun 15:00
+Redes y Comunicaciones | Alumnos = 52 | Slot original = 12 Jun 15:00 | Slot asignado = 9 Jun 15:00
+Métodos Cuantitativos para la Empresa | Alumnos = 37 | Slot original = 12 Jun 15:00 | Slot asignado = 3 Jun 10:00
+Español Profesional y Académico | Alumnos = 96 | Slot original = 12 Jun 15:00 | Slot asignado = 16 Jun 10:00
+Dirección y Gestión de Recursos Humanos | Alumnos = 20 | Slot original = 12 Jun 15:00 | Slot asignado = 12 Jun 10:00
+Cálculo | Alumnos = 495 | Slot original = 15 Jun 10:00 | Slot asignado = 3 Jun 10:00
+Cálculo II | Alumnos = 127 | Slot original = 15 Jun 10:00 | Slot asignado = 15 Jun 15:00
+Desarrollo de Recursos Semánticos, Interoperables y Abiertos | Alumnos = 3 | Slot original = 15 Jun 10:00 | Slot asignado = 15 Jun 10:00
+Dirección de Producción | Alumnos = 20 | Slot original = 15 Jun 12:00 | Slot asignado = 15 Jun 12:00
+Infraestructuras de Big Data | Alumnos = 51 | Slot original = 15 Jun 15:00 | Slot asignado = 15 Jun 10:00
+Modelización | Alumnos = 49 | Slot original = 15 Jun 15:00 | Slot asignado = 15 Jun 10:00
+Sistemas Distribuidos | Alumnos = 300 | Slot original = 15 Jun 15:00 | Slot asignado = 16 Jun 10:00
+Bases de Datos | Alumnos = 369 | Slot original = 16 Jun 10:00 | Slot asignado = 16 Jun 15:00
+Bases de Datos I | Alumnos = 55 | Slot original = 16 Jun 10:00 | Slot asignado = 12 Jun 15:00
+Traductores de Lenguajes | Alumnos = 57 | Slot original = 16 Jun 15:00 | Slot asignado = 8 Jun 15:00
+Comercio Exterior | Alumnos = 18 | Slot original = 16 Jun 15:00 | Slot asignado = 12 Jun 10:00

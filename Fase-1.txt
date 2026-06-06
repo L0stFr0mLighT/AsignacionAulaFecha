@@ -1,0 +1,79 @@
+Fundamentos de Economía y Administración de Empresas | Alumnos = 351 | Slot asignado = 19 Jun 18:00
+Contabilidad Financiera y de Sociedades | Alumnos = 23 | Slot asignado = 15 Jun 18:00
+Geometría 3D para Informática Gráfica | Alumnos = 53 | Slot asignado = 02 Jun 15:00
+Valoración de Activos e Inversiones | Alumnos = 20 | Slot asignado = 11 Jun 18:00
+Ecuaciones Diferenciales | Alumnos = 64 | Slot asignado = 11 Jun 18:00
+Programming Project | Alumnos = 124 | Slot asignado = 03 Jun 18:00
+Fotografía Computacional | Alumnos = 40 | Slot asignado = 04 Jun 18:00
+Derecho de Empresa | Alumnos = 33 | Slot asignado = 08 Jun 09:00
+Probabilidades y Estadística I | Alumnos = 371 | Slot asignado = 01 Jun 09:00
+Aplicaciones de la Biometría de la Voz | Alumnos = 40 | Slot asignado = 01 Jun 12:00
+Programación Declarativa: Lógica y Restricciones | Alumnos = 327 | Slot asignado = 01 Jun 09:00
+Visualización de la Información | Alumnos = 41 | Slot asignado = 17 Jun 09:00
+Concurrencia | Alumnos = 396 | Slot asignado = 03 Jun 09:00
+Adquisición y Procesamiento Numérico de Datos | Alumnos = 59 | Slot asignado = 18 Jun 12:00
+Procesamiento Digital de la Señal | Alumnos = 23 | Slot asignado = 05 Jun 18:00
+Gestión y Control de Calidad | Alumnos = 24 | Slot asignado = 17 Jun 09:00
+English for Professional and Academic Communication | Alumnos = 138 | Slot asignado = 01 Jun 09:00
+Programación II | Alumnos = 540 | Slot asignado = 19 Jun 18:00
+Fundamentos de los Computadores | Alumnos = 71 | Slot asignado = 11 Jun 09:00
+Inteligencia Artificial y Ciencia Abierta en Ingeniería de Software Científico | Alumnos = 62 | Slot asignado = 11 Jun 15:00
+Econometría | Alumnos = 22 | Slot asignado = 11 Jun 18:00
+Sistemas Orientados a Servicios | Alumnos = 308 | Slot asignado = 19 Jun 15:00
+Programación Funcional | Alumnos = 50 | Slot asignado = 11 Jun 09:00
+Robótica | Alumnos = 37 | Slot asignado = 05 Jun 18:00
+Robótica y Percepción Computacional | Alumnos = 41 | Slot asignado = 17 Jun 15:00
+Arquitectura de Computadores | Alumnos = 585 | Slot asignado = 15 Jun 09:00
+Seguridad de las Tecnologías de la Información | Alumnos = 60 | Slot asignado = 09 Jun 12:00
+Data Analytics | Alumnos = 23 | Slot asignado = 17 Jun 09:00
+Introducción a las Finanzas | Alumnos = 35 | Slot asignado = 15 Jun 09:00
+Aprendizaje Automático II | Alumnos = 45 | Slot asignado = 03 Jun 18:00
+Topología | Alumnos = 76 | Slot asignado = 09 Jun 18:00
+Programming Scalable Systems | Alumnos = 74 | Slot asignado = 12 Jun 12:00
+Sistemas Inteligentes | Alumnos = 173 | Slot asignado = 01 Jun 12:00
+Análisis de Estados Financieros | Alumnos = 27 | Slot asignado = 04 Jun 09:00
+Matemática Discreta III | Alumnos = 19 | Slot asignado = 17 Jun 18:00
+Ampliación de Macroeconomía | Alumnos = 21 | Slot asignado = 19 Jun 15:00
+Probabilidades y Estadística II | Alumnos = 441 | Slot asignado = 05 Jun 09:00
+Régimen Fiscal | Alumnos = 21 | Slot asignado = 09 Jun 09:00
+Multimedia | Alumnos = 62 | Slot asignado = 17 Jun 12:00
+Interacción Persona-Ordenador | Alumnos = 355 | Slot asignado = 03 Jun 09:00
+Matemática Discreta II | Alumnos = 114 | Slot asignado = 03 Jun 18:00
+Ingeniería de Protocolos de Comunicaciones | Alumnos = 46 | Slot asignado = 10 Jun 15:00
+Economía Mundial, Española y Regional | Alumnos = 25 | Slot asignado = 08 Jun 12:00
+Proyecto de Instalación Informática | Alumnos = 253 | Slot asignado = 01 Jun 15:00
+Computabilidad: Fundamentos y Aplicaciones | Alumnos = 47 | Slot asignado = 04 Jun 12:00
+Computación Social y Personalización | Alumnos = 54 | Slot asignado = 01 Jun 18:00
+Estructura de Computadores | Alumnos = 56 | Slot asignado = 19 Jun 09:00
+Fundamentos de Gestión de TI en la Empresa | Alumnos = 298 | Slot asignado = 09 Jun 09:00
+Teoría de la Información y la Codificación | Alumnos = 50 | Slot asignado = 08 Jun 18:00
+Computadores Personales | Alumnos = 91 | Slot asignado = 16 Jun 09:00
+Arquitectura del Data Warehouse | Alumnos = 57 | Slot asignado = 01 Jun 12:00
+Gestión de Proyetos Informáticos | Alumnos = 49 | Slot asignado = 08 Jun 09:00
+Sistemas Digitales | Alumnos = 364 | Slot asignado = 05 Jun 09:00
+Algoritmos y Estructura de Datos | Alumnos = 56 | Slot asignado = 05 Jun 18:00
+Estructuras Algebraicas | Alumnos = 57 | Slot asignado = 09 Jun 09:00
+Sistemas Dinámicos: Caos y Fractales | Alumnos = 41 | Slot asignado = 08 Jun 15:00
+Ingeniería del Software I | Alumnos = 258 | Slot asignado = 01 Jun 18:00
+Ingeniería del Software | Alumnos = 52 | Slot asignado = 05 Jun 09:00
+Bases de Datos II | Alumnos = 41 | Slot asignado = 09 Jun 09:00
+Español para Extranjeros | Alumnos = 11 | Slot asignado = 15 Jun 12:00
+Aspectos Sociales, Éticos y Legales de los Datos y la IA | Alumnos = 52 | Slot asignado = 03 Jun 09:00
+Sistemas Operativos | Alumnos = 64 | Slot asignado = 19 Jun 15:00
+Redes de Computadores | Alumnos = 328 | Slot asignado = 11 Jun 09:00
+Minería de Datos | Alumnos = 52 | Slot asignado = 19 Jun 15:00
+Redes y Comunicaciones | Alumnos = 52 | Slot asignado = 05 Jun 18:00
+Métodos Cuantitativos para la Empresa | Alumnos = 37 | Slot asignado = 01 Jun 18:00
+Español Profesional y Académico | Alumnos = 96 | Slot asignado = 18 Jun 12:00
+Dirección y Gestión de Recursos Humanos | Alumnos = 20 | Slot asignado = 03 Jun 09:00
+Cálculo | Alumnos = 495 | Slot asignado = 17 Jun 18:00
+Cálculo II | Alumnos = 127 | Slot asignado = 17 Jun 09:00
+Desarrollo de Recursos Semánticos, Interoperables y Abiertos | Alumnos = 3 | Slot asignado = 19 Jun 18:00
+Dirección de Producción | Alumnos = 20 | Slot asignado = 19 Jun 09:00
+Infraestructuras de Big Data | Alumnos = 51 | Slot asignado = 19 Jun 12:00
+Modelización | Alumnos = 49 | Slot asignado = 03 Jun 18:00
+Sistemas Distribuidos | Alumnos = 300 | Slot asignado = 19 Jun 18:00
+Bases de Datos | Alumnos = 369 | Slot asignado = 01 Jun 09:00
+Bases de Datos I | Alumnos = 55 | Slot asignado = 01 Jun 12:00
+Traductores de Lenguajes | Alumnos = 57 | Slot asignado = 09 Jun 18:00
+Comercio Exterior | Alumnos = 18 | Slot asignado = 05 Jun 09:00
