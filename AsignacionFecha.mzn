@@ -1,6 +1,5 @@
-
 % MODELO 1: PLANIFICACIÓN DE SLOTS DE EXÁMENES
-
+include "globals.mzn";
 
 % Conjuntos principales
 %_______________________
@@ -86,6 +85,14 @@ constraint forall(e in EXAMS)(
     dia_examen[e] = dia_slot[slot_asignado[e]]
 );
 
+
+% Grupos de exámenes por titulación y semestre (calculado en compilación)
+array[TITULACIONES, SEMESTRES] of set of int: exams_por_tituSem =
+    array2d(TITULACIONES, SEMESTRES,
+        [ { e | e in EXAMS where semestre_examen[e,t] = s }
+          | t in TITULACIONES, s in SEMESTRES ]
+    );
+
 % R1: capacidad maxima de alumnos en una fecha-hora
 %==================================================
 
@@ -134,21 +141,16 @@ constraint forall(
         %Parte derecha: resto 1 pq primero no necesita dist previa y despues lo añado
         /\ n_exam_por_tituSem[t, semestre_examen[e1,t]] <= max_examenes_repartibles 
     )(
-    abs(dia_examen[e1] - dia_examen[e2]) >= min_dias_mismo_semestre
+    (dia_examen[e1] - dia_examen[e2]) >= min_dias_mismo_semestre
+    \/ (dia_examen[e2] - dia_examen[e1]) >= min_dias_mismo_semestre
 );
 
 
 % R7: no permitir examenes del mismo semestre y titulación en el mismo slot
 %==========================================================================
 
-constraint forall(
-    e1,e2 in EXAMS, t in TITULACIONES
-        where e1<e2 
-        /\ semestre_examen[e1,t] > 0 
-        /\ semestre_examen[e2,t] > 0
-        /\ semestre_examen[e2,t] = semestre_examen[e1,t]
-    )(
-    slot_asignado[e1] != slot_asignado[e2]
+constraint forall(t in TITULACIONES, s in SEMESTRES where s > 0)(
+    alldifferent([slot_asignado[e] | e in EXAMS where semestre_examen[e,t] = s])
 );
 
 
@@ -156,35 +158,28 @@ constraint forall(
 %======================================================================
 
 var int: mismo_semestre =
-    sum(e1, e2 in EXAMS where e1 < e2)(
-        sum(t in TITULACIONES)(
-            if semestre_examen[e1,t] > 0 /\ semestre_examen[e2,t] > 0 /\ semestre_examen[e1,t] = semestre_examen[e2,t]
-                then 
-                    max([
-                        0,
-                        min_dist_mismo_semestre - abs(slot_asignado[e1] - slot_asignado[e2])
-                    ])
-            else 0
-            endif
+    sum(t in TITULACIONES, s in SEMESTRES where s > 0
+        /\ card(exams_por_tituSem[t,s]) >= 2)(
+        sum(e1, e2 in exams_por_tituSem[t,s] where e1 < e2)(
+            max(0, min_dist_mismo_semestre
+                   - abs(slot_asignado[e1] - slot_asignado[e2]))
         )
     );
-
 
 
 % P2: penalizar semestres cercanos de la misma titulacion
 %========================================================
 
 var int: semestre_cercano =
-    sum(e1, e2 in EXAMS where e1 < e2)(
-        sum(t in TITULACIONES)(
-        if semestre_examen[e1,t] > 0 /\ semestre_examen[e2,t] > 0 /\ abs(semestre_examen[e1,t] - semestre_examen[e2,t]) = 2
-            then 
-                max([
-                    0,
-                    min_dist_semestre_cercano - abs(slot_asignado[e1] - slot_asignado[e2])
-                ])
-        else 0
-        endif
+    sum(t in TITULACIONES,
+        s1 in SEMESTRES, s2 in SEMESTRES
+        where s1 > 0 /\ s2 > 0 /\ s2 - s1 = 2
+        /\ card(exams_por_tituSem[t,s1]) > 0
+        /\ card(exams_por_tituSem[t,s2]) > 0)(
+        sum(e1 in exams_por_tituSem[t,s1],
+            e2 in exams_por_tituSem[t,s2])(
+            max(0, min_dist_semestre_cercano
+                   - abs(slot_asignado[e1] - slot_asignado[e2]))
         )
     );
 
@@ -193,13 +188,10 @@ var int: semestre_cercano =
 %==================================================================
 
 var int: dias_consecutivos =
-    sum(e1, e2 in EXAMS where e1 < e2)(
-        sum(t in TITULACIONES)(
-        if semestre_examen[e1,t] > 0 /\ semestre_examen[e2,t] > 0 /\ semestre_examen[e1,t] = semestre_examen[e2,t]
-            then
-                bool2int(abs(dia_examen[e1] - dia_examen[e2]) = 1)
-        else 0
-        endif
+    sum(t in TITULACIONES, s in SEMESTRES where s > 0
+        /\ card(exams_por_tituSem[t,s]) >= 2)(
+        sum(e1, e2 in exams_por_tituSem[t,s] where e1 < e2)(
+            bool2int(abs(dia_examen[e1] - dia_examen[e2]) = 1)
         )
     );
 
@@ -207,22 +199,22 @@ var int: dias_consecutivos =
 %==============================================================
 % Esto es por si R6 no se aplica por el num de exam repartibles
 var int: mismo_dia =
-    sum(e1, e2 in EXAMS where e1 < e2)(
-        sum(t in TITULACIONES)(
-            if semestre_examen[e1,t] > 0 /\ semestre_examen[e2,t] > 0 /\ semestre_examen[e1,t] = semestre_examen[e2,t]
-                then
-                    bool2int(dia_examen[e1] = dia_examen[e2])
-            else 0
-            endif
+    sum(t in TITULACIONES, s in SEMESTRES where s > 0
+        /\ card(exams_por_tituSem[t,s]) >= 2)(
+        sum(e1, e2 in exams_por_tituSem[t,s] where e1 < e2)(
+            bool2int(dia_examen[e1] = dia_examen[e2])
         )
     );
-
+    
 % Función objetivo
 %=================
 
-%solve satisfy;
 
-solve minimize 1000 * mismo_semestre + 200  * semestre_cercano + 500 * dias_consecutivos + 2000 * mismo_dia;
+solve :: int_search(slot_asignado, first_fail, indomain_median)
+      :: restart_luby(100) 
+    minimize 1000 * mismo_semestre + 200  * semestre_cercano + 500 * dias_consecutivos + 2000 * mismo_dia <= 134000;
+% constraint 1000 * mismo_semestre + 200  * semestre_cercano + 500 * dias_consecutivos + 2000 * mismo_dia <= 134000;
+% solve satisfy;
 
 
 % Output

@@ -11,9 +11,9 @@ AULAS_MZN_PATH = "AsignacionAulas.mzn"
 
 SHEET_NAME = "Exámenes Junio"
 
-SOLVER_NAME = "gecode"
+SOLVER_NAME = "chuffed"
 
-TIMEOUT_FECHA = 30 #Tiempo de optimizacion Fecha
+TIMEOUT_FECHA = 0.5 #Tiempo de optimizacion Fecha
 TIMEOUT_AULA = 30 #Tiempo de optimizacion Aula
 
 def toBool(x):
@@ -468,6 +468,8 @@ def main():
         print("No se encontro fechas validas")
         return
 
+    print("Valor objetivo:", result_calendario.objective)
+
     slot_examen = extraer_slots_asignados(result_calendario)
 
     print("\nSlots asignados:")
@@ -487,6 +489,7 @@ def main():
         print("No se encontró asignación de aulas.")
         return
 
+    print("Valor objetivo:", result_aulas.objective)
     guardar_resultado_excel(result_aulas,data_aulas,metadata,archivo="resultado_asignacion.xlsx")
 
     print("\nEjecucion finalizada")
