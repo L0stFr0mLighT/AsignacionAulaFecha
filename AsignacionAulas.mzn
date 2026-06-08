@@ -56,30 +56,33 @@ array[EXAMS, ROOMS] of var 0..1: usa_aula;
 % Variables auxiliares
 %______________________
 
-array[EXAMS] of var int: capacidadAsig = [sum(r in ROOMS)(usa_aula[e,r] * capacidad[r]) | e in EXAMS];
+int: cap_max_aulas = sum(r in ROOMS)(capacidad[r]);
 
-array[EXAMS] of var int: aulasPorExamen = [sum(r in ROOMS)(usa_aula[e,r]) | e in EXAMS];
+int: max_alumnos = max([alumnos[e] | e in EXAMS]);
 
-array[EXAMS] of var int: excesoPorExamen = [capacidadAsig[e] - alumnos[e] | e in EXAMS];
+array[EXAMS] of var 0..cap_max_aulas: capacidadAsig = [sum(r in ROOMS)(usa_aula[e,r] * capacidad[r]) | e in EXAMS];
 
-var int: exceso_total =
+array[EXAMS] of var 0..n_aula: aulasPorExamen = [sum(r in ROOMS)(usa_aula[e,r]) | e in EXAMS];
+
+array[EXAMS] of var 0..cap_max_aulas: excesoPorExamen = [capacidadAsig[e] - alumnos[e] | e in EXAMS];
+
+var 0..(cap_max_aulas * n_exams): exceso_total =
     sum(e in EXAMS)(excesoPorExamen[e]);
 
-var int: aulas_usadas =
+var 0..(n_aula * n_exams): aulas_usadas =
     sum(e in EXAMS)(aulasPorExamen[e]);
 
 
-% R1: capacidad suficiente
-%==========================
+% Restricciones
+%===============
 
+% R1: capacidad suficiente
 constraint forall(e in EXAMS)(
     capacidadAsig[e] >= alumnos[e]
 );
 
 
 % R2: un aula no puede usarse por dos examenes en un mismo slot
-%==============================================================
-
 constraint forall(r in ROOMS, s in SLOTS)(
     sum(e in EXAMS where slot_examen[e] = s)(
         usa_aula[e,r]
@@ -88,8 +91,6 @@ constraint forall(r in ROOMS, s in SLOTS)(
 
 
 % R3: si requiere PC, solo puede usar aulas informaticas
-%========================================================
-
 constraint forall(e in EXAMS, r in ROOMS)(
     requiere_pc[e] /\ not es_informatica[r] -> usa_aula[e,r] = 0
 );
@@ -97,25 +98,18 @@ constraint forall(e in EXAMS, r in ROOMS)(
 
 
 % R4: si requiere enchufes, solo puede usar aulas con enchufes
-%=============================================================
-
 constraint forall(e in EXAMS, r in ROOMS)(
     requiere_enchufes[e] /\ not tiene_enchufes[r] -> usa_aula[e,r] = 0
 );
 
 
-
 % R5: todo examen debe usar al menos un aula
-%============================================
-
 constraint forall(e in EXAMS)(
     aulasPorExamen[e] >= 1
 );
 
 
-% R6: eliminar el uso de una aula en un slot
-%===========================================
-
+% R6: respetar disponibilidad de aulas
 constraint forall(e in EXAMS, r in ROOMS)(
     usa_aula[e,r] = 1 -> aula_disponible[r, slot_examen[e]]
 );
@@ -123,16 +117,14 @@ constraint forall(e in EXAMS, r in ROOMS)(
 
 
 % R7: maximo de aulas por examen
-%================================
-
 constraint forall(e in EXAMS)(
     aulasPorExamen[e] <= max_aulas
 );
 
+% Penalizaciones
+%===============
 
 % P1: usar varias plantas para un mismo examen
-%==============================================
-
 array[EXAMS, PLANT] of var 0..1: usa_planta;
 
 constraint forall(e in EXAMS, p in PLANT)(
@@ -147,8 +139,6 @@ var int: plantasDif =
 
 
 % P2: usar varios bloques para un mismo examen
-%==============================================
-
 array[EXAMS, BLOCK] of var 0..1: usa_bloque;
 
 constraint forall(e in EXAMS, b in BLOCK)(
@@ -163,32 +153,29 @@ var int: bloqueDif =
 
 
 % P3: usar aula informática sin necesitar PC
-%===========================================
-
 var int: info_mal =
     sum(e in EXAMS, r in ROOMS)(
         usa_aula[e,r] * bool2int(not requiere_pc[e] /\ es_informatica[r])
     );
 
 
-% P4: usar aulas grandes para examenes pequeños
-%==============================================
-
-var int: aula_grande_mal =
-    sum(e in EXAMS, r in ROOMS)(
-        usa_aula[e,r] *
-        bool2int(capacidad[r] >= 2 * alumnos[e])
-    );
-
-
+% P4: exceso relativo a la cantidad de alumnos
+var 0..(cap_max_aulas * 100 * n_exams): exceso_relativo = %MiniZinc opera mejor con enteros
+    sum(e in EXAMS)((excesoPorExamen[e] * 100) div max(1, alumnos[e]));
 
 % Función objetivo
 %==================
 
 % solve satisfy;
 
-solve minimize 60 * exceso_total + 10  * aulas_usadas + 5  * plantasDif + 10  * bloqueDif + 20 * info_mal + 200*aula_grande_mal;
-
+    solve :: int_search([usa_aula[e,r] | e in EXAMS, r in ROOMS],first_fail,indomain_min,complete)
+    minimize
+        5 * exceso_total
+        + 30 * (exceso_relativo div 100) %Correccion por operar con enteros
+        + 8  * aulas_usadas
+        + 3  * plantasDif
+        + 6  * bloqueDif
+        + 25 * info_mal;
 
 % Output
 

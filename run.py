@@ -3,6 +3,8 @@ import pandas as pd
 import minizinc
 from pathlib import Path
 from datetime import timedelta
+import math 
+from datetime import datetime
 
 EXCEL_PATH = "AsignacionClase.xlsx"
 
@@ -13,8 +15,8 @@ SHEET_NAME = "Exámenes Junio"
 
 SOLVER_NAME = "chuffed"
 
-TIMEOUT_FECHA = 0.5 #Tiempo de optimizacion Fecha
-TIMEOUT_AULA = 30 #Tiempo de optimizacion Aula
+TIMEOUT_FECHA = 10 #Tiempo de optimizacion Fecha
+TIMEOUT_AULA = 10 #Tiempo de optimizacion Aula
 
 def toBool(x):
     """
@@ -32,6 +34,42 @@ def toBool(x):
 
     s = str(x).strip().lower()
     return s in {"1", "1.0", "x", "true"} #Nosotros solo usaremos 1.0, pero es una mejora futura
+
+def parsear_slot_a_datetime(s: str, anyo: int = 2026) -> datetime:
+    """
+    Convierte un slot a datetime para poder ordenarlo cronologicamente.
+    """
+
+    s = str(s).strip()
+
+    meses = {
+        "ene": 1, "feb": 2, "mar": 3, "abr": 4, "may": 5, "jun": 6,
+        "jul": 7, "ago": 8, "sep": 9, "oct": 10, "nov": 11, "dic": 12,
+        "jan": 1, "apr": 4, "aug": 8, "dec": 12,
+    }
+
+    partes = s.split()
+
+    if len(partes) == 3:
+        try:
+            dia = int(partes[0])
+            mes = meses[partes[1][:3].lower()]
+            hora, minuto = partes[2].split(":")
+            return datetime(anyo, mes, dia, int(hora), int(minuto))
+        except Exception:
+            pass
+
+    formatos = [
+        "%d/%m/%Y %H:%M", # 10/06/2026 14:00
+        "%d-%m-%Y %H:%M", # 10-06-2026 14:00
+        "%d/%m/%y %H:%M", # 10/10/26 14:00
+    ]
+
+    for fmt in formatos:
+        try:
+            return datetime.strptime(s, fmt)
+        except ValueError:
+            pass
 
 def normalizar_slot(x):
     """
@@ -135,27 +173,23 @@ def prepare_data(df_exams, df_aulas, df_slots) -> tuple[dict, dict, dict]:
     """
 
 
-    # Slots posibles
+    # Slots posibles ordenados cronologicamente
 
-    slots = list(dict.fromkeys( df_slots["slot_texto"].apply(normalizar_slot)))
+    slots_raw = list(dict.fromkeys(df_slots["slot_texto"].apply(normalizar_slot)))
 
-    slots = [s for s in slots if s != ""]
+    slots_raw = [ s for s in slots_raw if s != ""]
 
-    # Dia de cada slot 
+    slots = sorted(slots_raw, key=parsear_slot_a_datetime)
 
-    dias = []
-    dia_to_id = {}
+    slot_dt = { s: parsear_slot_a_datetime(s) for s in slots}
 
-    for slot in slots:
-        dia = extraer_dia_slot(slot)
+    dias_ordenados = sorted({ slot_dt[s].date() for s in slots})
 
-        if dia not in dia_to_id: #Ahorro repes
-            dia_to_id[dia] = len(dia_to_id) + 1
-            dias.append(dia)
+    dia_to_id = {dia: i + 1 for i, dia in enumerate(dias_ordenados)}
 
-    dia_slot = [dia_to_id[extraer_dia_slot(slot)] for slot in slots]
+    dia_slot = [dia_to_id[slot_dt[s].date()]for s in slots]
 
-    n_dias = len(dias)
+    n_dias = len(dias_ordenados)
 
     # Examenes sin agrupar
 
@@ -304,12 +338,10 @@ def prepare_data(df_exams, df_aulas, df_slots) -> tuple[dict, dict, dict]:
         "n_slots": n_slots,
         "n_titu": n_titu,
 
-        "min_dist_mismo_semestre": 5, #Penalizaciones
-        "min_dist_semestre_cercano": 3, #Penalizaciones
-        "max_examenes_por_slot": 4,
+        "max_examenes_por_slot": 2,
+        "max_examenes_por_dia" : 6,
 
         "dia_slot": dia_slot,
-        "min_dias_mismo_semestre": 2,
         "n_dias": n_dias,
         "n_sem": n_sem,
         "n_exam_por_tituSem": n_exam_por_tituSem,
@@ -442,10 +474,47 @@ def guardar_resultado_excel(result_aulas,data_aulas,metadata,archivo="resultado_
 
     print(f"Resultado guardado en {archivo}")
 
+def validar_factibilidad(data_fechas, data_aulas, metadata):
+
+    """
+    Comprueba futuros problemas con la configuracion dada: 
+    examenes demasiado grandes, dias insuficientes o aulas minimas necesarias
+    """
+
+    avisos = []
+    exams = metadata["exams"]
+
+    # Colisiones inevitables por num de examenes y  num dias
+    for t_idx, t_nom in enumerate(metadata["titulaciones"]):
+        for sem in range(1, data_fechas["n_sem"] + 1):
+            n = data_fechas["n_exam_por_tituSem"][t_idx][sem]
+
+            if n > data_fechas["n_dias"]:
+                avisos.append( f"{t_nom} semestre {sem}: {n} examenes > {data_fechas['n_dias']} dias -> COLISION")
+
+    max_cap_aula = max(data_aulas["capacidad"])
+
+    # Combinacion imposible por num alumnos examen y num maximo de aulas
+    for _, ex in exams.iterrows():
+        min_aulas_necesarias = math.ceil(ex["alumnos"] / max_cap_aula)
+
+        if min_aulas_necesarias > data_aulas["max_aulas"]:
+            avisos.append(
+                f"{ex['examen']}: necesita al menos {min_aulas_necesarias} aulas, pero max_aulas = {data_aulas['max_aulas']}."
+            )
+
+    if avisos:
+        print("\n=== AVISOS DE FACTIBILIDAD ===")
+        for aviso in avisos: print(" -", aviso)
+
+    return avisos
+
 def main():
     df_exams, df_aulas, df_slots = read_excel()
 
     data_fechas, data_aulas, metadata = prepare_data(df_exams,df_aulas,df_slots)
+
+    validar_factibilidad(data_fechas, data_aulas, metadata)
 
     print("Datos leídos:")
     print(f"  Examenes agrupados: {data_fechas['n_exams']}")
@@ -468,8 +537,6 @@ def main():
         print("No se encontro fechas validas")
         return
 
-    print("Valor objetivo:", result_calendario.objective)
-
     slot_examen = extraer_slots_asignados(result_calendario)
 
     print("\nSlots asignados:")
@@ -489,7 +556,6 @@ def main():
         print("No se encontró asignación de aulas.")
         return
 
-    print("Valor objetivo:", result_aulas.objective)
     guardar_resultado_excel(result_aulas,data_aulas,metadata,archivo="resultado_asignacion.xlsx")
 
     print("\nEjecucion finalizada")

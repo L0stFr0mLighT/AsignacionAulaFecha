@@ -1,3 +1,4 @@
+
 % MODELO 1: PLANIFICACIÓN DE SLOTS DE EXÁMENES
 include "globals.mzn";
 
@@ -10,28 +11,17 @@ int: n_titu;
 int: n_sem;
 int: n_dias;
 
-
-% Distancia minima entre examenes de misma titulacion y mismo semestre
-int: min_dist_mismo_semestre;
-
-% Distancia minima entre semestres cercanos
-int: min_dist_semestre_cercano;
-
-% Para reducir la carga y no pensar en solapar lo maximo en un slot
-int: max_examenes_por_slot;
-
-% Para separar los examenes de un mismo semestre y titulacion
-% NOTA: son dias por slot, p.e. 5 y 8 son dif = 1 si no hay dias de examenes disp entre medio
-int: min_dias_mismo_semestre;
-
-% Para saber si el numero de examenes en titulacion-año puede repartirse de esa forma
-int: max_examenes_repartibles = ((n_dias - 1) div min_dias_mismo_semestre) + 1; 
-
 set of int: EXAMS = 1..n_exams;
 set of int: SLOTS = 1..n_slots;
 set of int: TITULACIONES = 1..n_titu;
 set of int: SEMESTRES = 0..n_sem;
+set of int: SEMESTRES_REALES = 1..n_sem;
 set of int: DIAS = 1..n_dias;
+
+
+% Para reducir la carga y no pensar en solapar lo maximo en un slot/dia
+int: max_examenes_por_slot;
+int: max_examenes_por_dia;
 
 
 % Datos de exámenes
@@ -43,11 +33,10 @@ array[SLOTS] of string: nombre_slot;
 
 % 0 si el examen e no pertenece a la titulación t
 % 2,4,6,8... si pertenece a esa titulación en ese semestre
-array[EXAMS, TITULACIONES] of int: semestre_examen;
-
+array[EXAMS, TITULACIONES] of SEMESTRES: semestre_examen;
 
 % Guarda num de examenes por titulacion y semestre
-array[TITULACIONES, SEMESTRES] of int: n_exam_por_tituSem;
+array[TITULACIONES, SEMESTRES] of 0..n_exams: n_exam_por_tituSem;
 
 array[EXAMS] of bool: requiere_pc;
 array[EXAMS] of bool: requiere_enchufes;
@@ -67,7 +56,7 @@ array[SLOTS] of int: capacidad_pc_slot;
 array[SLOTS] of int: capacidad_enchufes_slot;
 
 % Dia de cada slot
-array[SLOTS] of int: dia_slot; %Esto lo usare para hacer que no coincida los examenes de un mismo sem-titu
+array[SLOTS] of DIAS: dia_slot;
 
 
 % Variable de decision
@@ -76,146 +65,136 @@ array[SLOTS] of int: dia_slot; %Esto lo usare para hacer que no coincida los exa
 array[EXAMS] of var SLOTS: slot_asignado; % slot identificado por su indice 
 
 
-% Variable auxiliar
-%___________________
-
 array[EXAMS] of var DIAS: dia_examen;
 
-constraint forall(e in EXAMS)(
-    dia_examen[e] = dia_slot[slot_asignado[e]]
+constraint forall(e in EXAMS)( % formulada con suma para evitar tipo "var opt int"
+    dia_examen[e] = 
+        sum(s in SLOTS)(
+            dia_slot[s] * bool2int(slot_asignado[e] = s)
+        )
 );
 
-
-% Grupos de exámenes por titulación y semestre (calculado en compilación)
-array[TITULACIONES, SEMESTRES] of set of int: exams_por_tituSem =
-    array2d(TITULACIONES, SEMESTRES,
-        [ { e | e in EXAMS where semestre_examen[e,t] = s }
-          | t in TITULACIONES, s in SEMESTRES ]
+% Si una (titu, sem) tiene N examenes y hay D dias, la separacion natural
+% entre examenes consecutivos es (D-1)/(N-1)
+array[TITULACIONES, SEMESTRES_REALES] of int: separacion_ideal =
+    array2d(TITULACIONES, SEMESTRES_REALES,
+        [ if n_exam_por_tituSem[t,s] >= 2
+            then (n_dias - 1) div (n_exam_por_tituSem[t,s] - 1)
+            else 0
+            endif
+        | t in TITULACIONES, s in SEMESTRES_REALES ]
     );
 
-% R1: capacidad maxima de alumnos en una fecha-hora
-%==================================================
 
+
+% Restricciones
+%===============
+
+% R1: capacidad total de alumnos por slot
 constraint forall(s in SLOTS)(
     sum(e in EXAMS)(
         alumnos[e] * bool2int(slot_asignado[e] = s)) <= capacidad_total_slot[s]
 );
 
 
-% R2: capacidad maxima de pc en una fecha-hora
-%=============================================
-
+% R2: capacidad de aulas de informatica por slot (examenes que requieren PC)
 constraint forall(s in SLOTS)(
     sum(e in EXAMS where requiere_pc[e])(
         alumnos[e] * bool2int(slot_asignado[e] = s)) <= capacidad_pc_slot[s]
 );
 
 
-% R3: capacidad maxima de enchufes en una fecha-slot
-%===================================================
-
+% R3: capacidad de aulas con enchufes por slot
 constraint forall(s in SLOTS)(
     sum(e in EXAMS where requiere_enchufes[e])(
         alumnos[e] * bool2int(slot_asignado[e] = s)) <= capacidad_enchufes_slot[s]
 );
 
 
-% R4: capacidad maxima de examenes en una fecha-slot
-%===================================================
-
+% R4: maximo de examenes por slot - dispersa horizontalmente
 constraint forall(s in SLOTS)(
     sum(e in EXAMS)(bool2int(slot_asignado[e] = s)) <= max_examenes_por_slot
 );
 
 
-% R5: no permitir examenes del mismo semestre y titulación en el mismo dia
-%==========================================================================
-
-constraint forall(
-    e1, e2 in EXAMS, t in TITULACIONES
-    where e1 < e2 
-        /\ semestre_examen[e1,t] > 0 
-        /\ semestre_examen[e2,t] > 0 
+% R5: mismo slot prohibido para examenes de la misma (titulacion, semestre)
+constraint forall(e1, e2 in EXAMS, t in TITULACIONES
+    where e1 < e2
+        /\ semestre_examen[e1,t] > 0
         /\ semestre_examen[e1,t] = semestre_examen[e2,t]
-        % Solo pongo distancia de dias si num exam < num dias (por las optativas de cuarto de GII) 
-        %Parte derecha: resto 1 pq primero no necesita dist previa y despues lo añado
-        /\ n_exam_por_tituSem[t, semestre_examen[e1,t]] <= max_examenes_repartibles 
+)(
+    slot_asignado[e1] != slot_asignado[e2]
+);
+
+% R6: mismo dia prohibido para examenes de la misma (titulacion,semestre)
+constraint forall(e1, e2 in EXAMS, t in TITULACIONES
+    where e1 < e2
+        /\ semestre_examen[e1,t] > 0
+        /\ semestre_examen[e1,t] = semestre_examen[e2,t]
+        /\ n_exam_por_tituSem[t, semestre_examen[e1,t]] <= n_dias
+)(
+    dia_examen[e1] != dia_examen[e2]
+);
+
+% R7: tope maximo de examenes por dia
+array[DIAS] of var 0..n_exams: examenes_por_dia;
+
+constraint forall(d in DIAS)(
+    examenes_por_dia[d] = sum(e in EXAMS)(bool2int(dia_examen[e] = d))
+);
+
+constraint forall(d in DIAS)(
+    examenes_por_dia[d] <= max_examenes_por_dia
+);
+
+% Penalizaciones 
+%===============
+
+% P1: SEPARACION IDEAL
+var int: mal_repartidos =
+    sum(e1, e2 in EXAMS, t in TITULACIONES
+        where e1 < e2
+        /\ semestre_examen[e1,t] > 0
+        /\ semestre_examen[e1,t] = semestre_examen[e2,t]
     )(
-    (dia_examen[e1] - dia_examen[e2]) >= min_dias_mismo_semestre
-    \/ (dia_examen[e2] - dia_examen[e1]) >= min_dias_mismo_semestre
-);
-
-
-% R7: no permitir examenes del mismo semestre y titulación en el mismo slot
-%==========================================================================
-
-constraint forall(t in TITULACIONES, s in SEMESTRES where s > 0)(
-    alldifferent([slot_asignado[e] | e in EXAMS where semestre_examen[e,t] = s])
-);
-
-
-% P1: examenes de misma titulación y semestre demasiado cerca en slots
-%======================================================================
-
-var int: mismo_semestre =
-    sum(t in TITULACIONES, s in SEMESTRES where s > 0
-        /\ card(exams_por_tituSem[t,s]) >= 2)(
-        sum(e1, e2 in exams_por_tituSem[t,s] where e1 < e2)(
-            max(0, min_dist_mismo_semestre
-                   - abs(slot_asignado[e1] - slot_asignado[e2]))
-        )
+        max([0,
+            separacion_ideal[t, semestre_examen[e1,t]] - abs(dia_examen[e1] - dia_examen[e2])
+            ])
     );
 
 
-% P2: penalizar semestres cercanos de la misma titulacion
-%========================================================
-
-var int: semestre_cercano =
-    sum(t in TITULACIONES,
-        s1 in SEMESTRES, s2 in SEMESTRES
-        where s1 > 0 /\ s2 > 0 /\ s2 - s1 = 2
-        /\ card(exams_por_tituSem[t,s1]) > 0
-        /\ card(exams_por_tituSem[t,s2]) > 0)(
-        sum(e1 in exams_por_tituSem[t,s1],
-            e2 in exams_por_tituSem[t,s2])(
-            max(0, min_dist_semestre_cercano
-                   - abs(slot_asignado[e1] - slot_asignado[e2]))
-        )
+% P2: COLISIONES DE SLOT POR MISMO SEMESTRE-TITULACION
+% Importante para repetidores
+var int: colision_slot_titu =
+    sum(e1, e2 in EXAMS, t in TITULACIONES
+        where e1 < e2
+        /\ semestre_examen[e1,t] > 0
+        /\ semestre_examen[e2,t] > 0
+        /\ semestre_examen[e1,t] != semestre_examen[e2,t]
+    )(
+        bool2int(slot_asignado[e1] = slot_asignado[e2])
     );
 
 
-% P3: examenes del mismo semestre y titulación en dias consecutivos
-%==================================================================
+% P3: REPARTO GLOBAL (evita asimetrias raras)
+int: media_examenes_dia_x10 = (n_exams * 10) div n_dias;
 
-var int: dias_consecutivos =
-    sum(t in TITULACIONES, s in SEMESTRES where s > 0
-        /\ card(exams_por_tituSem[t,s]) >= 2)(
-        sum(e1, e2 in exams_por_tituSem[t,s] where e1 < e2)(
-            bool2int(abs(dia_examen[e1] - dia_examen[e2]) = 1)
-        )
+var int: desbalance =
+    sum(d in DIAS)(
+        abs(10 * examenes_por_dia[d] - media_examenes_dia_x10)
     );
 
-% P4: examenes del mismo semestre y titulación en el mismo dia
-%==============================================================
-% Esto es por si R6 no se aplica por el num de exam repartibles
-var int: mismo_dia =
-    sum(t in TITULACIONES, s in SEMESTRES where s > 0
-        /\ card(exams_por_tituSem[t,s]) >= 2)(
-        sum(e1, e2 in exams_por_tituSem[t,s] where e1 < e2)(
-            bool2int(dia_examen[e1] = dia_examen[e2])
-        )
-    );
-    
 % Función objetivo
 %=================
 
+var int: objetivo =
+    3000 * colision_slot_titu
+    + 1500 * mal_repartidos
+    + 100 * desbalance;
 
-solve :: int_search(slot_asignado, first_fail, indomain_median)
-      :: restart_luby(100) 
-    minimize 1000 * mismo_semestre + 200  * semestre_cercano + 500 * dias_consecutivos + 2000 * mismo_dia <= 134000;
-% constraint 1000 * mismo_semestre + 200  * semestre_cercano + 500 * dias_consecutivos + 2000 * mismo_dia <= 134000;
-% solve satisfy;
-
+solve :: int_search(slot_asignado, dom_w_deg, indomain_split, complete)
+    :: restart_luby(150)
+    minimize objetivo;
 
 % Output
 
