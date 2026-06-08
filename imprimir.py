@@ -305,7 +305,7 @@ def calcular_metricas(df_largo, df_asignacion, df_conflictos):
         ("CALENDARIO", "Carga media por dia", f"{carga_por_dia.mean():.2f}"),
         ("CALIDAD", "Conflictos GRAVES (mismo slot)", graves),
         ("CALIDAD", "Conflictos LEVES (mismo dia)", leves),
-        ("AULAS", "Exceso total (alumnos)", exceso_total),
+        ("AULAS", "Exceso total (capacidad)", exceso_total),
         ("AULAS", "Exceso medio por examen", f"{exceso_medio:.1f}"),
         ("AULAS", "Exceso mediano por examen", f"{exceso_mediano:.1f}"),
         ("AULAS", "Exceso maximo", exceso_max),

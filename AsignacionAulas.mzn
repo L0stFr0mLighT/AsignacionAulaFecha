@@ -52,7 +52,6 @@ array[ROOMS, SLOTS] of bool: aula_disponible;
 
 array[EXAMS, ROOMS] of var 0..1: usa_aula;
 
-
 % Variables auxiliares
 %______________________
 
