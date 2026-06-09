@@ -171,8 +171,6 @@ def prepare_data(df_exams, df_aulas, df_slots) -> tuple[dict, dict, dict]:
     """
     Prepara los diccionarios data_fechas y data_aulas; y crea tambien metadata para Excel respuesta
     """
-
-
     # Slots posibles ordenados cronologicamente
 
     slots_raw = list(dict.fromkeys(df_slots["slot_texto"].apply(normalizar_slot)))
@@ -567,7 +565,8 @@ def main():
     if result_aulas.solution is None:
         print("No se encontró asignación de aulas.")
         return
-
+    
+    print("Estado aulas asignadas:", result_aulas.status)
     guardar_resultado_excel(result_aulas,data_aulas,metadata,archivo="resultado_asignacion.xlsx")
 
     print("\nEjecucion finalizada")

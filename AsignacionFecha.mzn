@@ -126,7 +126,7 @@ constraint forall(e1, e2 in EXAMS, t in TITULACIONES
     slot_asignado[e1] != slot_asignado[e2]
 );
 
-% R6: mismo dia prohibido para examenes de la misma (titulacion,semestre)
+% R6: Si hay menos examenes de la misma (titulacion,semestre) que dias, mismo dia prohibido para examenes 
 constraint forall(e1, e2 in EXAMS, t in TITULACIONES
     where e1 < e2
         /\ semestre_examen[e1,t] > 0
@@ -163,14 +163,14 @@ var int: mal_repartidos =
     );
 
 
-% P2: COLISIONES DE SLOT POR MISMO SEMESTRE-TITULACION
+% P2: Penalizar examenes en el mismo slot de cursos contiguos
 % Importante para repetidores
 var int: colision_slot_titu =
     sum(e1, e2 in EXAMS, t in TITULACIONES
         where e1 < e2
         /\ semestre_examen[e1,t] > 0
         /\ semestre_examen[e2,t] > 0
-        /\ semestre_examen[e1,t] != semestre_examen[e2,t]
+        /\ abs(semestre_examen[e1,t] - semestre_examen[e2,t]) == 2
     )(
         bool2int(slot_asignado[e1] = slot_asignado[e2])
     );
