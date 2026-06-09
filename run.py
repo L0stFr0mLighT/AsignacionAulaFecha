@@ -160,7 +160,7 @@ def read_excel() -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
 
     # Slots posibles: columna O
     # --------------------------
-    slot_col = df.columns[14]
+    slot_col = df.columns[12]
     df_slots = df.loc[:, [slot_col]].copy()
     df_slots.columns = ["slot_texto"]
     df_slots = df_slots.dropna(subset=["slot_texto"])
@@ -338,8 +338,8 @@ def prepare_data(df_exams, df_aulas, df_slots) -> tuple[dict, dict, dict]:
         "n_slots": n_slots,
         "n_titu": n_titu,
 
-        "max_examenes_por_slot": 2,
-        "max_examenes_por_dia" : 6,
+        "max_examenes_por_slot": 3,
+        "max_examenes_por_dia" : 7,
 
         "dia_slot": dia_slot,
         "n_dias": n_dias,
@@ -444,27 +444,41 @@ def guardar_resultado_excel(result_aulas,data_aulas,metadata,archivo="resultado_
                 aulas_asignadas.append(str(nombre_aula))
                 capacidad_asignada += data_aulas["capacidad"][r]
 
+        titulaciones = exams.iloc[e]["titulaciones"]
+        if isinstance(titulaciones, list):
+            titulaciones_str = ", ".join(titulaciones)
+        else:
+            titulaciones_str = str(titulaciones)
+
+        slot_idx = data_aulas["slot_examen"][e]
+
         filas.append({
             "Examen": exams.iloc[e]["examen"],
-            "Slot original": exams.iloc[e]["slot_original"],
-            "Slot asignado": slots[data_aulas["slot_examen"][e] - 1],
+            "Titulaciones": titulaciones_str,
+            "Slot asignado": slots[slot_idx - 1],
+            "Slot_idx": slot_idx, # Lo uso para ordenar y despues lo quito
             "Alumnos": data_aulas["alumnos"][e],
             "Capacidad asignada": capacidad_asignada,
             "Exceso": capacidad_asignada - data_aulas["alumnos"][e],
             "Num aulas": len(aulas_asignadas),
             "Aulas asignadas": ", ".join(aulas_asignadas),
-            "Requiere PC": data_aulas["requiere_pc"][e],
-            "Requiere enchufes": data_aulas["requiere_enchufes"][e],
         })
 
-    df_resultado = pd.DataFrame(filas)
+    df_resultado = (pd.DataFrame(filas).sort_values("Slot_idx").drop(columns=["Slot_idx"]))
 
-    df_calendario = pd.DataFrame({
-        "Examen": exams["examen"],
-        "Slot original": exams["slot_original"],
-        "Slot asignado": [slots[s - 1] for s in data_aulas["slot_examen"]],
-        "Alumnos": data_aulas["alumnos"],
-    })
+    titulaciones_lista = [
+        ", ".join(t) if isinstance(t, list) else str(t)
+        for t in exams["titulaciones"]
+    ]
+
+    df_calendario = (
+        pd.DataFrame({
+            "Examen": exams["examen"].tolist(),
+            "Titulaciones": titulaciones_lista,
+            "Slot asignado": [slots[s - 1] for s in data_aulas["slot_examen"]],
+            "Slot_idx": data_aulas["slot_examen"],
+            "Alumnos": data_aulas["alumnos"],
+        }).sort_values("Slot_idx").drop(columns=["Slot_idx"]))
 
     with pd.ExcelWriter(archivo, engine="openpyxl") as writer:
         df_resultado.to_excel(writer, sheet_name="Asignacion", index=False)
@@ -504,7 +518,7 @@ def validar_factibilidad(data_fechas, data_aulas, metadata):
             )
 
     if avisos:
-        print("\n=== AVISOS DE FACTIBILIDAD ===")
+        print("\nAVISOS DE FACTIBILIDAD")
         for aviso in avisos: print(" -", aviso)
 
     return avisos
@@ -531,8 +545,6 @@ def main():
 
     print("Estado calendario:", result_calendario.status)
 
-    Path("Fase-1.txt").write_text(str(result_calendario),encoding="utf-8")
-
     if result_calendario.solution is None:
         print("No se encontro fechas validas")
         return
@@ -550,7 +562,7 @@ def main():
 
     result_aulas = run_minizinc_model(AULAS_MZN_PATH,data_aulas,timeout_minutes=TIMEOUT_AULA)
 
-    Path("Fase-2.txt").write_text(str(result_aulas),encoding="utf-8")
+    print("Estado calendario:", result_aulas.status)
 
     if result_aulas.solution is None:
         print("No se encontró asignación de aulas.")
