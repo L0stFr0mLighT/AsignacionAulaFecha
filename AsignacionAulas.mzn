@@ -15,7 +15,7 @@ int: max_aulas;
 set of int: EXAMS = 1..n_exams;
 set of int: ROOMS = 1..n_aula;
 set of int: SLOTS = 1..n_slots;
-set of int: PLANT = 1..n_plantas;
+set of int: PLANT = 0..n_plantas-1;
 set of int: BLOCK = 1..n_bloques;
 
 
@@ -51,6 +51,7 @@ array[ROOMS, SLOTS] of bool: aula_disponible;
 %______________________
 
 array[EXAMS, ROOMS] of var 0..1: usa_aula;
+
 
 % Variables auxiliares
 %______________________
