@@ -19,22 +19,21 @@ set of int: PLANT = 1..n_plantas;
 set of int: BLOCK = 1..n_bloques;
 
 
+array[EXAMS] of string: nombre_examen;
+array[SLOTS] of string: nombre_slot;
+
 % Datos de examenes
 %___________________
-
 array[EXAMS] of int: alumnos;
 array[EXAMS] of SLOTS: slot_examen;
 
 array[EXAMS] of bool: requiere_pc;
 array[EXAMS] of bool: requiere_enchufes;
 
-array[EXAMS] of string: nombre_examen;
-array[SLOTS] of string: nombre_slot;
 
 
 % Datos de aulas
 %_________________
-
 array[ROOMS] of int: capacidad;
 array[ROOMS] of bool: tiene_enchufes;
 array[ROOMS] of bool: es_informatica;
@@ -51,6 +50,7 @@ array[ROOMS, SLOTS] of bool: aula_disponible;
 %______________________
 
 array[EXAMS, ROOMS] of var 0..1: usa_aula;
+
 
 % Variables auxiliares
 %______________________
@@ -112,7 +112,6 @@ constraint forall(e in EXAMS)(
 constraint forall(e in EXAMS, r in ROOMS)(
     usa_aula[e,r] = 1 -> aula_disponible[r, slot_examen[e]]
 );
-
 
 
 % R7: maximo de aulas por examen

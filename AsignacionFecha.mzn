@@ -24,12 +24,17 @@ int: max_examenes_por_slot;
 int: max_examenes_por_dia;
 
 
+array[EXAMS] of string: nombre_examen;
+array[SLOTS] of string: nombre_slot;
+
 % Datos de exámenes
 %___________________
 
 array[EXAMS] of int: alumnos;
-array[EXAMS] of string: nombre_examen;
-array[SLOTS] of string: nombre_slot;
+
+array[EXAMS] of bool: requiere_pc;
+array[EXAMS] of bool: requiere_enchufes;
+
 
 % 0 si el examen e no pertenece a la titulación t
 % 2,4,6,8... si pertenece a esa titulación en ese semestre
@@ -38,12 +43,8 @@ array[EXAMS, TITULACIONES] of SEMESTRES: semestre_examen;
 % Guarda num de examenes por titulacion y semestre
 array[TITULACIONES, SEMESTRES] of 0..n_exams: n_exam_por_tituSem;
 
-array[EXAMS] of bool: requiere_pc;
-array[EXAMS] of bool: requiere_enchufes;
 
-
-
-% Capacidades necesaria por slot
+% Datos de slots
 %________________________________
 
 % Capacidad total disponible en cada slot
@@ -67,8 +68,8 @@ array[EXAMS] of var SLOTS: slot_asignado; % slot identificado por su indice
 
 array[EXAMS] of var DIAS: dia_examen;
 
-constraint forall(e in EXAMS)( % formulada con suma para evitar tipo "var opt int"
-    dia_examen[e] = 
+constraint forall(e in EXAMS)(
+    dia_examen[e] =
         sum(s in SLOTS)(
             dia_slot[s] * bool2int(slot_asignado[e] = s)
         )
@@ -177,11 +178,13 @@ var int: colision_slot_titu =
 
 
 % P3: REPARTO GLOBAL (evita asimetrias raras)
-int: media_examenes_dia_x10 = (n_exams * 10) div n_dias;
 
-var int: desbalance =
+%Se multiplica *100 para intentar operar con numeros enteros cuando se pueda
+int: media_examenes_dia_x10 = (n_exams * 100) div n_dias;
+
+var int: mal_reparto =
     sum(d in DIAS)(
-        abs(10 * examenes_por_dia[d] - media_examenes_dia_x10)
+        abs(100 * examenes_por_dia[d] - media_examenes_dia_x10)
     );
 
 % Función objetivo
@@ -190,7 +193,7 @@ var int: desbalance =
 var int: objetivo =
     3000 * colision_slot_titu
     + 1500 * mal_repartidos
-    + 100 * desbalance;
+    + 100 * mal_reparto;
 
 solve :: int_search(slot_asignado, dom_w_deg, indomain_split, complete)
     :: restart_luby(150)
