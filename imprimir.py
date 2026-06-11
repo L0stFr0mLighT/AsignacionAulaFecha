@@ -97,43 +97,13 @@ def limpiar_nombre_hoja(nombre):
 # ==========================================================
 
 def leer_resultado():
-    """
-    Lee:
-      - hoja Asignacion
-      - hoja Examenes_procesados
+    df = pd.read_excel(RESULTADO_PATH, sheet_name="Asignacion")
+    df.columns = [str(c).strip() for c in df.columns]
 
-    De Asignacion usamos:
-      Examen, Slot asignado, Alumnos
-
-    De Examenes_procesados usamos:
-      examen, semestres_titulaciones
-    """
-
-    df_asig = pd.read_excel(RESULTADO_PATH, sheet_name="Asignacion")
-    df_exams = pd.read_excel(RESULTADO_PATH, sheet_name="Examenes_procesados")
-
-    # Normalizo nombres por seguridad
-    df_asig.columns = [str(c).strip() for c in df_asig.columns]
-    df_exams.columns = [str(c).strip() for c in df_exams.columns]
-
-    # Comprobaciones mínimas
-    columnas_asig = {"Examen", "Slot asignado", "Alumnos"}
-    columnas_exams = {"examen", "semestres_titulaciones"}
-
-    faltan_asig = columnas_asig - set(df_asig.columns)
-    faltan_exams = columnas_exams - set(df_exams.columns)
-
-    if faltan_asig:
-        raise ValueError(f"Faltan columnas en hoja Asignacion: {faltan_asig}")
-
-    if faltan_exams:
-        raise ValueError(f"Faltan columnas en hoja Examenes_procesados: {faltan_exams}")
-
-
-    df_exams = df_exams[["examen", "semestres_titulaciones"]].copy()
-    df_exams = df_exams.rename(columns={"examen": "Examen"})
-
-    df = df_asig.merge(df_exams, on="Examen", how="left")
+    columnas_necesarias = {"Examen", "Slot asignado", "Alumnos", "semestres_titulaciones"}
+    faltan = columnas_necesarias - set(df.columns)
+    if faltan:
+        raise ValueError(f"Faltan columnas en hoja Asignacion: {faltan}")
 
     df["semestres_titulaciones"] = df["semestres_titulaciones"].apply(parsear_lista)
 

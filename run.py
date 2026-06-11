@@ -7,7 +7,6 @@ import math
 from datetime import datetime
 
 EXCEL_PATH = "AsignacionClase.xlsx"
-
 CALENDARIO_MZN_PATH = "AsignacionFecha.mzn"
 AULAS_MZN_PATH = "AsignacionAulas.mzn"
 
@@ -15,90 +14,38 @@ SHEET_NAME = "Exámenes Junio"
 
 SOLVER_NAME = "gecode"
 
-TIMEOUT_FECHA = 10 #Tiempo de optimizacion Fecha
-TIMEOUT_AULA = 10 #Tiempo de optimizacion Aula
+TIMEOUT_FECHA = 30 # Tiempo de optimizacion Fecha
+TIMEOUT_AULA = 10 # Tiempo de optimizacion Aula
 
 def toBool(x):
     """
     Normaliza valores booleanos desde Excel
-    Acepta 1, 1.0, x
+    Acepta 1, 1.0, x, true
     """
-    if pd.isna(x):
-        return False
+    if pd.isna(x): return False # Caso celda vacia
 
-    if isinstance(x, bool):
-        return x
-
-    if isinstance(x, (int, float)):
-        return x != 0
+    if isinstance(x, bool): return x
 
     s = str(x).strip().lower()
-    return s in {"1", "1.0", "x", "true"} #Nosotros solo usaremos 1.0, pero es una mejora futura
+    return s in {"1", "1.0", "x", "true"} # Nosotros solo usaremos 1.0, pero es una mejora futura
 
-def parsear_slot_a_datetime(s: str, anyo: int = 2026) -> datetime:
+def toDatetime(s) -> datetime:
     """
-    Convierte un slot a datetime para poder ordenarlo cronologicamente.
+    Convierte un slot a datetime
     """
-
     s = str(s).strip()
-
-    meses = {
-        "ene": 1, "feb": 2, "mar": 3, "abr": 4, "may": 5, "jun": 6,
-        "jul": 7, "ago": 8, "sep": 9, "oct": 10, "nov": 11, "dic": 12,
-        "jan": 1, "apr": 4, "aug": 8, "dec": 12,
-    }
-
-    partes = s.split()
-
-    if len(partes) == 3:
-        try:
-            dia = int(partes[0])
-            mes = meses[partes[1][:3].lower()]
-            hora, minuto = partes[2].split(":")
-            return datetime(anyo, mes, dia, int(hora), int(minuto))
-        except Exception:
-            pass
-
-    formatos = [
-        "%d/%m/%Y %H:%M", # 10/06/2026 14:00
-        "%d-%m-%Y %H:%M", # 10-06-2026 14:00
-        "%d/%m/%y %H:%M", # 10/10/26 14:00
-    ]
-
-    for fmt in formatos:
-        try:
-            return datetime.strptime(s, fmt)
-        except ValueError:
-            pass
+    return datetime.strptime(s, "%d/%m/%Y %H:%M")
 
 def normalizar_slot(x):
     """
-    Para evitar diferencias raras entre columna C y columna M
+    Normaliza los slots posibles leídos del Excel
     """
-    if pd.isna(x):
-        return ""
+    if pd.isna(x): return ""
 
-    if isinstance(x, pd.Timestamp): 
-        return x.strftime("%d %b %H:%M") #Formateo 2026-10-01 10:00:00 -> 01 Oct 10:00
+    if isinstance(x, pd.Timestamp):
+        return x.strftime("%d/%m/%Y %H:%M")
 
     return str(x).strip()
-
-def extraer_dia_slot(slot_texto):
-    """
-    Extrae la parte de dia de un slot
-    """
-    texto = str(slot_texto).strip()
-    partes = texto.split()
-
-    if len(partes) >= 3:
-        # Caso tipo: 1 Jun 10:00
-        return " ".join(partes[:-1])
-
-    if len(partes) == 2:
-        # Caso tipo: 01/06/2026 10:00
-        return partes[0]
-
-    return texto
 
 def parse_semestre_grado(texto) -> tuple[int, str]:
     """
@@ -117,22 +64,21 @@ def parse_semestre_grado(texto) -> tuple[int, str]:
 def read_excel() -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
     """
     Lee del Excel:
-    - columnas A-F: examenes
-    - columnas G-L: aulas
-    - columna M: slots posibles
+    - columnas A-E: examenes
+    - columnas F-K: aulas
+    - columna L: slots posibles
     """
     df = pd.read_excel(EXCEL_PATH, sheet_name=SHEET_NAME)
     df.columns = [str(c).strip() for c in df.columns]
 
-    # Examenes: columnas A-F
+    # Examenes: columnas A-E
     #-----------------------
-    exam_cols = df.columns[0:6]
+    exam_cols = df.columns[0:5]
     df_exams = df.loc[:, exam_cols].copy()
 
     df_exams.columns = [ #Renombro
         "examen",
         "semestre_grado",
-        "slot_texto",
         "matriculados",
         "requiere_pc",
         "requiere_enchufes",
@@ -141,9 +87,9 @@ def read_excel() -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
     examen_criticas = ["examen","semestre_grado","matriculados",]
     df_exams = df_exams.dropna(subset=examen_criticas) #Si falta algunos de los datos en las col criticas lo elimino
 
-    # Aulas: columnas G-L
+    # Aulas: columnas F-K
     # -------------------
-    aula_cols = df.columns[6:12]
+    aula_cols = df.columns[5:11]
     df_aulas = df.loc[:, aula_cols].copy()
 
     df_aulas.columns = [
@@ -156,11 +102,11 @@ def read_excel() -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
     ]
 
     aulas_criticas = ["aula","bloque","planta","capacidad",]
-    df_aulas = df_aulas.dropna(subset=aulas_criticas)
+    df_aulas = df_aulas.dropna(subset=aulas_criticas) #Como las filas son menos que examenes ó slot, tengo que eliminar las vacias
 
-    # Slots posibles: columna O
+    # Slots posibles: columna L
     # --------------------------
-    slot_col = df.columns[12]
+    slot_col = df.columns[11]
     df_slots = df.loc[:, [slot_col]].copy()
     df_slots.columns = ["slot_texto"]
     df_slots = df_slots.dropna(subset=["slot_texto"])
@@ -174,18 +120,14 @@ def prepare_data(df_exams, df_aulas, df_slots) -> tuple[dict, dict, dict]:
     # Slots posibles ordenados cronologicamente
 
     slots_raw = list(dict.fromkeys(df_slots["slot_texto"].apply(normalizar_slot)))
+    slots_raw = [s for s in slots_raw if s != ""]
 
-    slots_raw = [ s for s in slots_raw if s != ""]
+    slots = sorted(slots_raw, key=toDatetime)  # Ordena slots por dia-hora
+    slot_dt = { s: toDatetime(s) for s in slots}
 
-    slots = sorted(slots_raw, key=parsear_slot_a_datetime)
-
-    slot_dt = { s: parsear_slot_a_datetime(s) for s in slots}
-
-    dias_ordenados = sorted({ slot_dt[s].date() for s in slots})
-
-    dia_to_id = {dia: i + 1 for i, dia in enumerate(dias_ordenados)}
-
-    dia_slot = [dia_to_id[slot_dt[s].date()]for s in slots]
+    dias_ordenados = sorted({ slot_dt[s].date() for s in slots}) #Ordena solo dias sin repes
+    dia_to_id = {dia: i + 1 for i, dia in enumerate(dias_ordenados)} # Diccionario de dias
+    dia_slot = [dia_to_id[slot_dt[s].date()] for s in slots] #Por cada slot, guarda que dia es
 
     n_dias = len(dias_ordenados)
 
@@ -196,11 +138,8 @@ def prepare_data(df_exams, df_aulas, df_slots) -> tuple[dict, dict, dict]:
     for _, row in df_exams.iterrows():
         semestre, titulacion = parse_semestre_grado(row["semestre_grado"])
 
-        slot_original = normalizar_slot(row["slot_texto"])
-
         rows.append({
             "examen": str(row["examen"]).strip(),
-            "slot_original": slot_original,
             "matriculados": int(row["matriculados"]),
             "requiere_pc": toBool(row["requiere_pc"]),
             "requiere_enchufes": toBool(row["requiere_enchufes"]),
@@ -214,17 +153,14 @@ def prepare_data(df_exams, df_aulas, df_slots) -> tuple[dict, dict, dict]:
     grouped = []
 
     for nombre, g in exams_long.groupby("examen",sort=False): #sort=False para ir mas rapido
-        titulaciones = sorted(set(g["titulacion"]))
-
-        semestres_titulaciones = sorted(set(zip(g["semestre"], g["titulacion"])))
-
-        slot_original = g["slot_original"].iloc[0] #los examenes comaprtidos tienen slots originales iguales
+        
+        titulaciones = sorted(set(g["titulacion"])) # todas las titulaciones de ese examen sin repetir
+        semestres_titulaciones = sorted(set(zip(g["semestre"], g["titulacion"]))) # guarda parejas (semestre, titulacion)
 
         grouped.append({
             "examen": nombre,
-            "slot_original": slot_original,
             "alumnos": int(g["matriculados"].sum()),
-            "requiere_pc": bool(g["requiere_pc"].max()),
+            "requiere_pc": bool(g["requiere_pc"].max()), # si uno requiere pc, lo hacen todos por convencion
             "requiere_enchufes": bool(g["requiere_enchufes"].max()),
             "titulaciones": titulaciones,
             "semestres_titulaciones": semestres_titulaciones,
@@ -233,9 +169,9 @@ def prepare_data(df_exams, df_aulas, df_slots) -> tuple[dict, dict, dict]:
     exams = pd.DataFrame(grouped)
 
     # Matriz semestre_examen
-    # P.e: PPS = [1,1,1,1] resp [GII,GII+ADE,GM,GCDIA]
 
-    all_titulaciones = sorted({t for ts in exams["titulaciones"] for t in ts})
+    # Recorre la lista de titu de cada examen,despues mira cada uno individ. y mira que no se repita
+    all_titulaciones = sorted({t for ts in exams["titulaciones"] for t in ts}) # Haciendolo asi en un futuro podria aceptar +titu
     n_titu = len(all_titulaciones)
 
     semestre_examen = []
@@ -243,19 +179,20 @@ def prepare_data(df_exams, df_aulas, df_slots) -> tuple[dict, dict, dict]:
     for _, row in exams.iterrows():
         fila = []
 
-        for t in all_titulaciones:
+        for t in all_titulaciones: # P.e: PPS = [2,2,2,2] resp [GII,GII+ADE,GM,GCDIA]
             semestre_en_titulacion = 0 # Por defecto 0
             for sem, tit in row["semestres_titulaciones"]:
-                if tit == t: semestre_en_titulacion = int(sem)
+                if tit == t: semestre_en_titulacion = int(sem) #Si coincide titulacion, guardo semestre
             fila.append(semestre_en_titulacion)
 
         semestre_examen.append(fila)
 
     # Matriz de numero de examenes por titu-sem
-    n_sem = max(max(fila) for fila in semestre_examen) # Podria poner directamente 8, pero es una posible mejora futura
+    n_sem = max(max(fila) for fila in semestre_examen) # Podria poner directamente 10 (GII+ADE), pero es una posible mejora futura
 
-    #Vamos a coincidir indices con semestres para facilitar calculos
-    n_exam_por_tituSem = [[0 for _ in range(n_sem + 1)] for _ in range(n_titu)] 
+    # 5 columnas -> 4 semestres dif + semestre 0 (vacio)
+    # 4 filas por num de titulaciones
+    n_exam_por_tituSem = [[0 for _ in range(n_sem + 1)] for _ in range(n_titu)]
 
     for e in range(len(semestre_examen)): #Recorro todos los examenes
         for t in range(n_titu):
@@ -275,15 +212,15 @@ def prepare_data(df_exams, df_aulas, df_slots) -> tuple[dict, dict, dict]:
     aulas["tiene_enchufes"] = aulas["tiene_enchufes"].apply(toBool)
     aulas["es_informatica"] = aulas["es_informatica"].apply(toBool)
 
-    aulas["planta_mzn"] = aulas["planta"]+1
-    aulas["bloque_mzn"] = aulas["bloque"]+1
+    aulas["planta_mzn"] = aulas["planta"]
+    aulas["bloque_mzn"] = aulas["bloque"]
 
     # Tamaños
 
     n_exams = len(exams)
     n_aula = len(aulas)
     n_slots = len(slots)
-    n_plantas = int(aulas["planta_mzn"].max())
+    n_plantas = int(aulas["planta_mzn"].max()) + 1
     n_bloques = int(aulas["bloque_mzn"].max())
 
     #Disponibilidad de aulas
@@ -319,11 +256,11 @@ def prepare_data(df_exams, df_aulas, df_slots) -> tuple[dict, dict, dict]:
             if aula_disponible[r][s]: #Si todas estan disponibles sera igual todo
                 cap_total += capacidad[r]
 
-                if es_informatica[r]:
-                    cap_pc += capacidad[r]
+            if es_informatica[r]:
+                cap_pc += capacidad[r]
 
-                if tiene_enchufes[r]:
-                    cap_enchufes += capacidad[r]
+            if tiene_enchufes[r]:
+                cap_enchufes += capacidad[r]
 
         capacidad_total_slot.append(cap_total)
         capacidad_pc_slot.append(cap_pc)
@@ -413,12 +350,12 @@ def extraer_slots_asignados(result_calendario) -> list[int]:
     """
 
     if result_calendario is None or result_calendario.solution is None:
-        raise RuntimeError("El modelo de fechas no encontro solucion")
+        raise RuntimeError("El modelo de fechas no encontró solución")
 
-    slot_asignado = result_calendario["slot_asignado"] #NOTA: slot_asginado tiene que estar definido
+    slot_asignado = result_calendario["slot_asignado"] #NOTA: slot_asignado tiene que estar definido en el mnz
     return [int(s) for s in slot_asignado]
 
-def guardar_resultado_excel(result_aulas,data_aulas,metadata,archivo="resultado_asignacion.xlsx"):
+def guardar_resultado_excel(result_aulas,data_aulas,metadata,archivo):
     
     if result_aulas is None or result_aulas.solution is None:
         print("No hay solución de aulas para guardar.")
@@ -442,17 +379,11 @@ def guardar_resultado_excel(result_aulas,data_aulas,metadata,archivo="resultado_
                 aulas_asignadas.append(str(nombre_aula))
                 capacidad_asignada += data_aulas["capacidad"][r]
 
-        titulaciones = exams.iloc[e]["titulaciones"]
-        if isinstance(titulaciones, list):
-            titulaciones_str = ", ".join(titulaciones)
-        else:
-            titulaciones_str = str(titulaciones)
-
         slot_idx = data_aulas["slot_examen"][e]
 
         filas.append({
             "Examen": exams.iloc[e]["examen"],
-            "Titulaciones": titulaciones_str,
+            "Semestres_titulaciones": exams.iloc[e]["semestres_titulaciones"],
             "Slot asignado": slots[slot_idx - 1],
             "Slot_idx": slot_idx, # Lo uso para ordenar y despues lo quito
             "Alumnos": data_aulas["alumnos"][e],
@@ -464,25 +395,8 @@ def guardar_resultado_excel(result_aulas,data_aulas,metadata,archivo="resultado_
 
     df_resultado = (pd.DataFrame(filas).sort_values("Slot_idx").drop(columns=["Slot_idx"]))
 
-    titulaciones_lista = [
-        ", ".join(t) if isinstance(t, list) else str(t)
-        for t in exams["titulaciones"]
-    ]
-
-    df_calendario = (
-        pd.DataFrame({
-            "Examen": exams["examen"].tolist(),
-            "Titulaciones": titulaciones_lista,
-            "Slot asignado": [slots[s - 1] for s in data_aulas["slot_examen"]],
-            "Slot_idx": data_aulas["slot_examen"],
-            "Alumnos": data_aulas["alumnos"],
-        }).sort_values("Slot_idx").drop(columns=["Slot_idx"]))
-
     with pd.ExcelWriter(archivo, engine="openpyxl") as writer:
         df_resultado.to_excel(writer, sheet_name="Asignacion", index=False)
-        df_calendario.to_excel(writer, sheet_name="Calendario", index=False)
-        metadata["exams"].to_excel(writer, sheet_name="Examenes_procesados", index=False)
-        metadata["aulas"].to_excel(writer, sheet_name="Aulas_procesadas", index=False)
 
     print(f"Resultado guardado en {archivo}")
 
@@ -552,7 +466,7 @@ def main():
     print("\nSlots asignados:")
     print(slot_examen)
 
-    data_aulas["slot_examen"] = slot_examen #Pasamos fechas calculadas a AsignacionAula
+    data_aulas["slot_examen"] = slot_examen #Pasamos los slots decididos a AsignacionAula
 
     #Fase 2: asignacion de mejores aulas para examen
 
@@ -560,14 +474,12 @@ def main():
 
     result_aulas = run_minizinc_model(AULAS_MZN_PATH,data_aulas,timeout_minutes=TIMEOUT_AULA)
 
-    print("Estado calendario:", result_aulas.status)
-
     if result_aulas.solution is None:
         print("No se encontró asignación de aulas.")
         return
     
     print("Estado aulas asignadas:", result_aulas.status)
-    guardar_resultado_excel(result_aulas,data_aulas,metadata,archivo="resultado_asignacion.xlsx")
+    guardar_resultado_excel(result_aulas,data_aulas,metadata,archivo="Resultado_Asignacion.xlsx")
 
     print("\nEjecucion finalizada")
 
