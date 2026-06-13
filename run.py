@@ -5,6 +5,7 @@ from pathlib import Path
 from datetime import timedelta
 import math 
 from datetime import datetime
+from imprimir import generar_calendario
 
 EXCEL_PATH = "AsignacionClase.xlsx"
 CALENDARIO_MZN_PATH = "AsignacionFecha.mzn"
@@ -15,6 +16,9 @@ SOLVER_NAME = "chuffed"
 
 TIMEOUT_FECHA = 30 # Tiempo de optimizacion Fecha
 TIMEOUT_AULA = 10 # Tiempo de optimizacion Aula
+MAX_EXAMENES_POR_DIA = 7
+MAX_AULAS = 12
+MAX_EXAMENES_POR_SLOT = 3
 
 def toBool(x):
     """
@@ -272,8 +276,8 @@ def prepare_data(df_exams, df_aulas, df_slots) -> tuple[dict, dict, dict]:
         "n_slots": n_slots,
         "n_titu": n_titu,
 
-        "max_examenes_por_slot": 3,
-        "max_examenes_por_dia" : 7,
+        "max_examenes_por_slot": MAX_EXAMENES_POR_SLOT,
+        "max_examenes_por_dia" : MAX_EXAMENES_POR_DIA ,
 
         "dia_slot": dia_slot,
         "n_dias": n_dias,
@@ -303,7 +307,7 @@ def prepare_data(df_exams, df_aulas, df_slots) -> tuple[dict, dict, dict]:
         "n_plantas": n_plantas,
         "n_bloques": n_bloques,
 
-        "max_aulas": 12,
+        "max_aulas": MAX_AULAS,
 
         "nombre_examen": exams["examen"].tolist(),
         "nombre_aula": aulas["aula"].tolist(),
@@ -479,7 +483,8 @@ def main():
     
     print("Estado aulas asignadas:", result_aulas.status)
     guardar_resultado_excel(result_aulas,data_aulas,metadata,archivo="Resultado_Asignacion.xlsx")
-
+    print("\nGenerando calendario visual...")
+    generar_calendario()
     print("\nEjecucion finalizada")
 
 if __name__ == "__main__":
