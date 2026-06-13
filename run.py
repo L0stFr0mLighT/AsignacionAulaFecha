@@ -467,9 +467,6 @@ def main():
 
     slot_examen = extraer_slots_asignados(result_calendario)
 
-    print("\nSlots asignados:")
-    print(slot_examen)
-
     data_aulas["slot_examen"] = slot_examen #Pasamos los slots decididos a AsignacionAula
 
     #Fase 2: asignacion de mejores aulas para examen

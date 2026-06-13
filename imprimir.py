@@ -553,7 +553,7 @@ def generar_calendario():
 
     escribir_calendario_excel(df_largo, df_resultado, OUTPUT_PATH)
 
-    print(f"Calendario guardado en: {OUTPUT_PATH}")
+    print(f"Calendario guardado en {OUTPUT_PATH}")
 
 if __name__ == "__main__":
     generar_calendario()
