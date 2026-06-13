@@ -12,7 +12,8 @@ CALENDARIO_MZN_PATH = "AsignacionFecha.mzn"
 AULAS_MZN_PATH = "AsignacionAulas.mzn"
 
 SHEET_NAME = "Exámenes Junio"
-SOLVER_NAME = "chuffed"
+
+SOLVER_NAME = "gecode"
 
 TIMEOUT_FECHA = 30 # Tiempo de optimizacion Fecha
 TIMEOUT_AULA = 10 # Tiempo de optimizacion Aula
