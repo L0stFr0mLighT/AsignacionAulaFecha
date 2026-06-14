@@ -21,6 +21,7 @@ set of int: BLOCK = 1..n_bloques;
 
 array[EXAMS] of string: nombre_examen;
 array[SLOTS] of string: nombre_slot;
+array[ROOMS] of string: nombre_aula;
 
 % Datos de examenes
 %___________________
@@ -40,8 +41,6 @@ array[ROOMS] of bool: es_informatica;
 
 array[ROOMS] of PLANT: planta_aula;
 array[ROOMS] of BLOCK: bloque_aula;
-
-array[ROOMS] of string: nombre_aula;
 
 array[ROOMS, SLOTS] of bool: aula_disponible;
 

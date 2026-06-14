@@ -17,6 +17,10 @@ SOLVER_NAME = "gecode"
 TIMEOUT_FECHA = 30 # Tiempo de optimizacion Fecha
 TIMEOUT_AULA = 10 # Tiempo de optimizacion Aula
 
+MAX_AULAS = 12
+MAX_EXAMENES_POR_SLOT = 3
+MAX_EXAMENES_POR_DIA = 7
+
 def toBool(x):
     """
     Normaliza valores booleanos desde Excel
@@ -273,8 +277,8 @@ def prepare_data(df_exams, df_aulas, df_slots) -> tuple[dict, dict, dict]:
         "n_slots": n_slots,
         "n_titu": n_titu,
 
-        "max_examenes_por_slot": 3,
-        "max_examenes_por_dia" : 7,
+        "max_examenes_por_slot": MAX_EXAMENES_POR_SLOT,
+        "max_examenes_por_dia" : MAX_EXAMENES_POR_DIA,
 
         "dia_slot": dia_slot,
         "n_dias": n_dias,
@@ -304,7 +308,7 @@ def prepare_data(df_exams, df_aulas, df_slots) -> tuple[dict, dict, dict]:
         "n_plantas": n_plantas,
         "n_bloques": n_bloques,
 
-        "max_aulas": 12,
+        "max_aulas": MAX_AULAS,
 
         "nombre_examen": exams["examen"].tolist(),
         "nombre_aula": aulas["aula"].tolist(),
