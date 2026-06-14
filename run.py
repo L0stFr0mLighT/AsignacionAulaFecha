@@ -5,6 +5,7 @@ from pathlib import Path
 from datetime import timedelta
 import math 
 from datetime import datetime
+from imprimir import generar_calendario
 
 EXCEL_PATH = "AsignacionClase.xlsx"
 CALENDARIO_MZN_PATH = "AsignacionFecha.mzn"
@@ -277,8 +278,8 @@ def prepare_data(df_exams, df_aulas, df_slots) -> tuple[dict, dict, dict]:
         "n_slots": n_slots,
         "n_titu": n_titu,
 
-        "max_examenes_por_slot": MAX_EXAMENES_POR_SLOT,
-        "max_examenes_por_dia" : MAX_EXAMENES_POR_DIA,
+        "max_examenes_por_slot": 3,
+        "max_examenes_por_dia" : 7,
 
         "dia_slot": dia_slot,
         "n_dias": n_dias,
@@ -467,9 +468,6 @@ def main():
 
     slot_examen = extraer_slots_asignados(result_calendario)
 
-    print("\nSlots asignados:")
-    print(slot_examen)
-
     data_aulas["slot_examen"] = slot_examen #Pasamos los slots decididos a AsignacionAula
 
     #Fase 2: asignacion de mejores aulas para examen
@@ -484,7 +482,8 @@ def main():
     
     print("Estado aulas asignadas:", result_aulas.status)
     guardar_resultado_excel(result_aulas,data_aulas,metadata,archivo="Resultado_Asignacion.xlsx")
-
+    print("\nGenerando calendario visual...")
+    generar_calendario()
     print("\nEjecucion finalizada")
 
 if __name__ == "__main__":

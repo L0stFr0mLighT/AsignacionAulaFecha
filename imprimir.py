@@ -3,130 +3,79 @@ import pandas as pd
 from openpyxl import Workbook
 from openpyxl.styles import Alignment, Font, PatternFill, Border, Side
 from openpyxl.utils import get_column_letter
+from pathlib import Path
 
 
-# ==========================================================
-# CONFIGURACIÓN
-# ==========================================================
 
-RESULTADO_PATH = "resultado_asignacion.xlsx"
-OUTPUT_PATH = "calendario_examenes.xlsx"
+# CONFIGURACION
+# =============
+RESULTADO_PATH = "Resultado_Asignacion.xlsx"
+OUTPUT_PATH = "Calendario_Examenes.xlsx"
 
 
-# ==========================================================
-# FUNCIONES AUXILIARES
-# ==========================================================
+# AUXILIARES
+# ==========
 
 def extraer_fecha_hora(slot_texto):
+
+    """
+    Extrae de un slot (fecha, hora, Timestamp fecha-hora)
+    """
     texto = str(slot_texto).strip()
 
-    # Caso tipo: "1 Jun 10:00"
-    try:
-        dt = pd.to_datetime("2026 " + texto, format="%Y %d %b %H:%M", dayfirst=True)
-        fecha = dt.strftime("%d/%m/%Y")
-        hora = dt.strftime("%H:%M")
-        return fecha, hora, dt
-    except Exception:
-        pass
-
-    # Caso tipo: "01/06/2026 10:00"
+    #NOTA: Nuestras fechas estan escritas en formato "01/06/2026 10:00"
     try:
         dt = pd.to_datetime(texto, dayfirst=True)
         fecha = dt.strftime("%d/%m/%Y")
         hora = dt.strftime("%H:%M")
-        return fecha, hora, dt
+        return fecha, hora, dt # p.e. ("01/06/2026", "10:00", Timestamp("2026-06-01 10:00:00"))
     except Exception:
-        return texto, "", pd.NaT
-
+        return texto, "", pd.NaT # p.e. (texto original, "", fecha inválida)
 
 def semestre_a_curso(semestre):
     """
-    En junio normalmente trabajas con semestres pares:
-        2  -> Primero
-        4  -> Segundo
-        6  -> Tercero
-        8  -> Cuarto
-        10 -> Quinto
+    Transforma semestre en curso (Sem. 2 -> Primero)
     """
-    nombres = {
-        1: "Primero",
-        2: "Segundo",
-        3: "Tercero",
-        4: "Cuarto",
-        5: "Quinto",
-    }
-
-    curso_num = int(semestre) // 2
-    return nombres.get(curso_num, f"Curso {curso_num}")
-
+    nombres = ["Primero", "Segundo", "Tercero", "Cuarto", "Quinto"]
+    return nombres[int(semestre) // 2 - 1] # NOTA: nuestro modelo solo trabaja en semestre pares por ser convocatoria de junio
 
 def parsear_lista(valor):
     """
-    Convierte strings tipo:
-        "[(6, 'GII'), (6, 'GII+ADE')]"
-    en una lista real de Python:
-        [(6, 'GII'), (6, 'GII+ADE')]
+    Convierte strings tipo "[(6, 'GII'), (6, 'GII+ADE')]" -> lista real de Python [(6, 'GII'), (6, 'GII+ADE')]
     """
-    if isinstance(valor, list):
-        return valor
 
     if pd.isna(valor):
         return []
 
-    try:
-        return ast.literal_eval(str(valor))
-    except Exception:
-        return []
+    return ast.literal_eval(str(valor))
 
-
-def limpiar_nombre_hoja(nombre):
-    """
-    Excel no permite algunos caracteres en nombres de hoja.
-    """
-    nombre = str(nombre)
-    caracteres_prohibidos = ["\\", "/", "*", "[", "]", ":", "?"]
-
-    for c in caracteres_prohibidos:
-        nombre = nombre.replace(c, "-")
-
-    return nombre[:31]
-
-
-# ==========================================================
 # LECTURA DEL RESULTADO
-# ==========================================================
+# =====================
 
 def leer_resultado():
     df = pd.read_excel(RESULTADO_PATH, sheet_name="Asignacion")
     df.columns = [str(c).strip() for c in df.columns]
 
-    columnas_necesarias = {"Examen", "Slot asignado", "Alumnos", "semestres_titulaciones"}
+    columnas_necesarias = {"Examen", "Slot asignado", "Alumnos", "Semestres_titulaciones"}
     faltan = columnas_necesarias - set(df.columns)
     if faltan:
-        raise ValueError(f"Faltan columnas en hoja Asignacion: {faltan}")
+        raise ValueError(f"No se pudo generar el calendario porque faltan las columnas: {faltan}")
 
-    df["semestres_titulaciones"] = df["semestres_titulaciones"].apply(parsear_lista)
+    df["Semestres_titulaciones"] = df["Semestres_titulaciones"].apply(parsear_lista)
 
     parsed = df["Slot asignado"].apply(extraer_fecha_hora)
+    # Se añaden nuevas columnas
     df["Fecha"] = parsed.apply(lambda x: x[0])
     df["Hora"] = parsed.apply(lambda x: x[1])
     df["Fecha_dt"] = parsed.apply(lambda x: x[2])
-    df["Dia_dt"] = parsed.apply(lambda x: x[2].normalize() if pd.notna(x[2]) else pd.NaT)
+    df["Dia_dt"] = parsed.apply(lambda x: x[2].normalize() if pd.notna(x[2]) else pd.NaT) # Lo usare despues para ordenar segun dias
 
     return df
 
-
-# ==========================================================
-# TRANSFORMACIÓN A FORMATO LARGO
-# ==========================================================
-
 def construir_formato_largo(df):
     """
-    Convierte cada examen en una o varias filas.
-
-    Si un examen pertenece a varias titulaciones, por ejemplo:
-        [(6, 'GII'), (6, 'GII+ADE')]
-
+    Dado la tabla de examenes, se contruye su formato largo.
+    Si un examen pertenece a varias titulaciones, p.e. [(6, 'GII'), (6, 'GII+ADE')]
     entonces aparecerá una fila para GII y otra para GII+ADE.
     """
 
@@ -138,7 +87,7 @@ def construir_formato_largo(df):
         slot = row["Slot asignado"]
         fecha = row["Fecha"]
         hora = row["Hora"]
-        sem_tit = row["semestres_titulaciones"]
+        sem_tit = row["Semestres_titulaciones"]
         fecha_dt = row["Fecha_dt"]
         dia_dt = row["Dia_dt"]
 
@@ -158,8 +107,13 @@ def construir_formato_largo(df):
 
     return pd.DataFrame(filas)
 
-
 def obtener_orden_fechas(df_largo):
+
+    """
+    Saca la lista de fechas únicas ordenadas cronológicamente para las columnas
+    en el calendario Excel.
+    """
+
     df_fechas = (
         df_largo[["Fecha", "Dia_dt"]]
         .drop_duplicates(subset=["Fecha"])
@@ -167,20 +121,12 @@ def obtener_orden_fechas(df_largo):
     )
     return df_fechas["Fecha"].tolist()
 
-
-# ==========================================================
 # DETECCIÓN DE CONFLICTOS
-# ==========================================================
+# =======================
 
 def detectar_conflictos(df_largo):
     """
-    Detecta dos tipos de conflictos:
-
-    GRAVE (MISMO SLOT):
-        Dos examenes de la misma titulacion+curso a la misma hora exacta.
-
-    INCOMODIDAD (MISMO DIA):
-        Dos examenes del mismo curso en distintas horas pero el mismo dia.
+    Crea la tabla que detecta conflictos: GRAVE (mismo slot) ó LEVE (mismo dia)
     """
 
     conflictos = []
@@ -207,65 +153,60 @@ def detectar_conflictos(df_largo):
     grupos_dia = df_largo.groupby(["Titulacion", "Curso", "Semestre", "Fecha"])
 
     for (titulacion, curso, semestre, fecha), g in grupos_dia:
-        if len(g) > 1 and g["Slot"].nunique() == len(g):
-            examenes_lista = []
+        if len(g) > 1 and g["Slot"].nunique() == len(g): # Tengo que mirar que sean distintos slots pq sino seria GRAVE y no LEVE
+            examenes_lista = [] # Aqui guardo los examenes que coinciden por dia
 
-            for _, row in g.sort_values(["Hora", "Examen"]).iterrows():
+            # Para que quede bonito la columna de Examenes en conflicto lo ordeno por Hora
+            for _, row in g.sort_values("Hora").iterrows():
                 examenes_lista.append(f"{row['Hora']} - {row['Examen']}")
 
             conflictos.append({
-                "Tipo": "MISMO DIA",
+                "Tipo": "MISMO DIA (leve)",
                 "Titulacion": titulacion,
                 "Curso": curso,
                 "Semestre": semestre,
                 "Fecha": fecha,
-                "Hora": "-",
-                "Nº examenes": len(g),
+                "Hora": "-", # No importa la hora
+                "Num. examenes": len(g),
                 "Examenes": " | ".join(examenes_lista),
             })
 
     df_conf = pd.DataFrame(conflictos)
 
     if not df_conf.empty:
-        df_conf = df_conf.sort_values(
-            ["Tipo", "Titulacion", "Curso", "Semestre", "Fecha"]
-        ).reset_index(drop=True)
+        # Ordeno la dataFrame por Tipos y despues Fecha para mas bonito 
+        df_conf = df_conf.sort_values(["Tipo","Fecha"]).reset_index(drop=True)
 
     return df_conf
 
 def calcular_metricas(df_largo, df_asignacion, df_conflictos):
     """
-    Calcula KPIs interpretables para defensa academica.
+    Calcula las metricas del resultado. 
+    Devuelve una lista de tuplas (categoria, nombre_metrica, valor) para luego imprimir en Excel.
     """
 
-    # --- Calendario ---
+    # Calendario
     examenes_unicos = df_largo["Examen"].nunique()
     dias_usados = df_largo["Fecha"].nunique()
-    carga_por_dia = df_largo.groupby("Fecha")["Examen"].nunique()
+    carga_por_dia = df_largo.groupby("Fecha")["Examen"].nunique() # En tabla larga se repite filas de examen-fecha por cada titulacion
 
-    # --- Conflictos ---
+    # Conflictos
     if not df_conflictos.empty:
         graves = (df_conflictos["Tipo"] == "MISMO SLOT (grave)").sum()
-        leves = (df_conflictos["Tipo"] == "MISMO DIA").sum()
+        leves = (df_conflictos["Tipo"] == "MISMO DIA (leve)").sum()
     else:
         graves = 0
         leves = 0
 
-    # --- Aulas ---
+    # Aulas
     exceso_total = int(df_asignacion["Exceso"].sum())
     exceso_medio = float(df_asignacion["Exceso"].mean())
     exceso_max = int(df_asignacion["Exceso"].max())
-    exceso_mediano = float(df_asignacion["Exceso"].median())
-
     num_aulas_medio = float(df_asignacion["Num aulas"].mean())
     num_aulas_max = int(df_asignacion["Num aulas"].max())
-    pct_una_sola_aula = 100.0 * (df_asignacion["Num aulas"] == 1).sum() / len(df_asignacion)
 
-    mal_usadas = (
-        df_asignacion["Capacidad asignada"] > 2 * df_asignacion["Alumnos"]
-    ).sum()
-
-    pct_mal_usadas = 100.0 * mal_usadas / len(df_asignacion)
+    una_sola_aula = 100.0 * (df_asignacion["Num aulas"] == 1).sum() / len(df_asignacion)
+    mal_usadas = 100.0 *((df_asignacion["Capacidad asignada"] > 2 * df_asignacion["Alumnos"]).sum()) / len(df_asignacion)
 
     metricas = [
         ("CALENDARIO", "Examenes unicos", examenes_unicos),
@@ -277,41 +218,37 @@ def calcular_metricas(df_largo, df_asignacion, df_conflictos):
         ("CALIDAD", "Conflictos LEVES (mismo dia)", leves),
         ("AULAS", "Exceso total (capacidad)", exceso_total),
         ("AULAS", "Exceso medio por examen", f"{exceso_medio:.1f}"),
-        ("AULAS", "Exceso mediano por examen", f"{exceso_mediano:.1f}"),
         ("AULAS", "Exceso maximo", exceso_max),
         ("AULAS", "Num aulas medio por examen", f"{num_aulas_medio:.2f}"),
         ("AULAS", "Num aulas maximo", num_aulas_max),
-        ("AULAS", "Examenes con 1 sola aula (%)", f"{pct_una_sola_aula:.1f}%"),
-        ("AULAS", "Examenes en aula > 2x alumnos (%)", f"{pct_mal_usadas:.1f}%"),
+        ("AULAS", "Examenes con 1 sola aula (%)", f"{una_sola_aula:.1f}%"),
+        ("AULAS", "Examenes en aula > 2x alumnos (%)", f"{mal_usadas:.1f}%"),
     ]
 
     return metricas
 
-# ==========================================================
 # ESCRITURA DEL EXCEL
-# ==========================================================
+# ===================
 
 def escribir_calendario_excel(df_largo, df_asignacion, output_path):
     fechas = obtener_orden_fechas(df_largo)
     titulaciones = sorted(df_largo["Titulacion"].unique())
 
+    # Creo el nuevo Excel y borro la hoja por defecto que viene
     wb = Workbook()
     ws_default = wb.active
     wb.remove(ws_default)
 
-    # --------------------------
-    # Estilos
-    # --------------------------
+    # Preparo los estilos
+    fill_titulo = PatternFill("solid", fgColor="1F4E78") # Color azul oscuro
+    fill_header = PatternFill("solid", fgColor="D9EAF7") # Color azul claro
+    fill_curso = PatternFill("solid", fgColor="E2F0D9") # Color verde claro
+    fill_conflicto_leve = PatternFill("solid", fgColor="FFF2CC") # Color amarillo claro
+    fill_conflicto_grave = PatternFill("solid", fgColor="F4CCCC") # Color rojo claro
+    fill_normal = PatternFill("solid", fgColor="FFFFFF") # Color blanco
+    fill_categoria = PatternFill("solid", fgColor="DDEBF7") # Color azul muy claro
 
-    fill_titulo = PatternFill("solid", fgColor="1F4E78")
-    fill_header = PatternFill("solid", fgColor="D9EAF7")
-    fill_curso = PatternFill("solid", fgColor="E2F0D9")
-    fill_conflicto_leve = PatternFill("solid", fgColor="FFF2CC")
-    fill_conflicto_grave = PatternFill("solid", fgColor="F4CCCC")
-    fill_normal = PatternFill("solid", fgColor="FFFFFF")
-    fill_categoria = PatternFill("solid", fgColor="DDEBF7")
-
-    font_titulo = Font(bold=True, size=14, color="FFFFFF")
+    font_titulo = Font(bold=True, size=14, color="FFFFFF") # Color blanco
     font_header = Font(bold=True)
     font_curso = Font(bold=True)
     font_categoria = Font(bold=True, size=11)
@@ -319,26 +256,23 @@ def escribir_calendario_excel(df_largo, df_asignacion, output_path):
     thin = Side(style="thin", color="999999")
     border = Border(left=thin, right=thin, top=thin, bottom=thin)
 
-    align_center = Alignment(horizontal="center", vertical="center", wrap_text=True)
+    align_center = Alignment(horizontal="center", vertical="center", wrap_text=True) # wrap_text para ocupar varias lineas en la celda
     align_left = Alignment(horizontal="left", vertical="top", wrap_text=True)
 
     orden_cursos = ["Primero", "Segundo", "Tercero", "Cuarto", "Quinto"]
 
-    # ======================================================
     # Hoja por titulación
-    # ======================================================
+    # ===================
 
     for titulacion in titulaciones:
-        ws = wb.create_sheet(title=limpiar_nombre_hoja(titulacion))
+        ws = wb.create_sheet(title=str(titulacion))
 
-        df_tit = df_largo[df_largo["Titulacion"] == titulacion].copy()
+        df_tit = df_largo[df_largo["Titulacion"] == titulacion].copy() # Las filas de esa titu
 
-        # Título
+        # Título: Calendario de exámenes
         ws.merge_cells(
-            start_row=1,
-            start_column=1,
-            end_row=1,
-            end_column=len(fechas) + 1
+            start_row=1, start_column=1,
+            end_row=1, end_column=len(fechas) + 1
         )
 
         c = ws.cell(row=1, column=1)
@@ -347,7 +281,7 @@ def escribir_calendario_excel(df_largo, df_asignacion, output_path):
         c.font = font_titulo
         c.alignment = align_center
 
-        # Cabecera
+        # Cabecera: Curso y Fechas
         ws.cell(row=2, column=1).value = "Curso"
         ws.cell(row=2, column=1).fill = fill_header
         ws.cell(row=2, column=1).font = font_header
@@ -366,8 +300,7 @@ def escribir_calendario_excel(df_largo, df_asignacion, output_path):
         for curso in orden_cursos:
             df_curso = df_tit[df_tit["Curso"] == curso]
 
-            if df_curso.empty:
-                continue
+            if df_curso.empty: continue # Para los que no tienen quinto año
 
             ws.cell(row=fila_actual, column=1).value = curso
             ws.cell(row=fila_actual, column=1).fill = fill_curso
@@ -376,26 +309,26 @@ def escribir_calendario_excel(df_largo, df_asignacion, output_path):
 
             for j, fecha in enumerate(fechas, start=2):
                 df_dia = df_curso[df_curso["Fecha"] == fecha].copy()
-                df_dia = df_dia.sort_values(["Hora", "Examen"])
+                df_dia = df_dia.sort_values("Hora")
 
                 examenes = []
-                slots_unicos = set()
+                slots_unicos = set() # Para detectar conflicto grave ya que set no guarda repes
 
                 for _, row in df_dia.iterrows():
                     examenes.append(f"{row['Hora']} - {row['Examen']}")
                     slots_unicos.add(row["Slot"])
 
-                cell = ws.cell(row=fila_actual, column=j)
+                cell = ws.cell(row=fila_actual, column=j) # Celda donde toca escribir
 
-                if examenes:
+                if examenes: # Si hay examenes lo escribo con salto de linea al final
                     cell.value = "\n".join(examenes)
                 else:
                     cell.value = ""
 
                 cell.alignment = align_left
 
-                if len(examenes) > 1:
-                    if len(slots_unicos) < len(examenes):
+                if len(examenes) > 1: # Si hay mas de un examen en el mismo dia, miro si es grave o leve
+                    if len(slots_unicos) < len(examenes): # Si hay menos slots unicos que examenes, entonces hay conflicto grave
                         cell.fill = fill_conflicto_grave
                     else:
                         cell.fill = fill_conflicto_leve
@@ -405,35 +338,43 @@ def escribir_calendario_excel(df_largo, df_asignacion, output_path):
             fila_actual += 1
 
         # Formato general
+
+        # Miro cual es la ultima fila y columna para poner bordes y ajustar tamaños
         max_row = ws.max_row
         max_col = ws.max_column
 
         for row in ws.iter_rows(min_row=1, max_row=max_row, min_col=1, max_col=max_col):
-            for cell in row:
+            for cell in row: 
                 cell.border = border
 
-        ws.column_dimensions["A"].width = 14
+        ws.column_dimensions["A"].width = 14 # Columna de cursos
 
         for col in range(2, max_col + 1):
-            ws.column_dimensions[get_column_letter(col)].width = 24
+            ws.column_dimensions[get_column_letter(col)].width = 24 # Columna de fechas
 
         for row in range(3, max_row + 1):
-            ws.row_dimensions[row].height = 90
+            ws.row_dimensions[row].height = 90 # Hago mas alta la fila para que quepa los dist examenes con salto de linea
 
+        # Ajuste de altura de las dos primeras filas (titulo y cabecera)
         ws.row_dimensions[1].height = 25
         ws.row_dimensions[2].height = 30
 
+        # Para que se vea siempre los cursos al deslizar
         ws.freeze_panes = "B3"
 
-    # ======================================================
     # Hoja de conflictos
-    # ======================================================
+    # ===================
 
     df_conflictos = detectar_conflictos(df_largo)
 
     ws_conf = wb.create_sheet(title="Conflictos", index=0)
 
     ws_conf.cell(row=1, column=1).value = "Conflictos detectados"
+
+    ws_conf.merge_cells(
+            start_row=1, start_column=1,
+            end_row=1, end_column=len(df_conflictos.columns)
+        )
     ws_conf.cell(row=1, column=1).font = font_titulo
     ws_conf.cell(row=1, column=1).fill = fill_titulo
     ws_conf.cell(row=1, column=1).alignment = align_center
@@ -446,15 +387,17 @@ def escribir_calendario_excel(df_largo, df_asignacion, output_path):
     else:
         columnas = list(df_conflictos.columns)
 
+        # Escribo la cabecera de la tabla de conflictos
         for j, col in enumerate(columnas, start=1):
-            cell = ws_conf.cell(row=3, column=j)
+            cell = ws_conf.cell(row=2, column=j)
             cell.value = col
             cell.fill = fill_header
             cell.font = font_header
             cell.alignment = align_center
             cell.border = border
 
-        for i, (_, row) in enumerate(df_conflictos.iterrows(), start=4):
+        # Escribo los conflictos detectados
+        for i, (_, row) in enumerate(df_conflictos.iterrows(), start=3):
             es_grave = row["Tipo"] == "MISMO SLOT (grave)"
 
             for j, col in enumerate(columnas, start=1):
@@ -468,18 +411,23 @@ def escribir_calendario_excel(df_largo, df_asignacion, output_path):
                 else:
                     cell.fill = fill_conflicto_leve
 
-    ws_conf.column_dimensions["A"].width = 22
-    ws_conf.column_dimensions["B"].width = 15
-    ws_conf.column_dimensions["C"].width = 12
-    ws_conf.column_dimensions["D"].width = 10
-    ws_conf.column_dimensions["E"].width = 14
-    ws_conf.column_dimensions["F"].width = 8
-    ws_conf.column_dimensions["G"].width = 12
-    ws_conf.column_dimensions["H"].width = 80
+    # Ajuste de tamaños de columnas manualmente para que se vea bien el contenido
+    widths = {
+        "A": 22,
+        "B": 15,
+        "C": 12,
+        "D": 10,
+        "E": 14,
+        "F": 8,
+        "G": 12,
+        "H": 80,
+    }
 
-    # ======================================================
+    for col, width in widths.items():
+        ws_conf.column_dimensions[col].width = width
+
     # Hoja de métricas
-    # ======================================================
+    # ================
 
     metricas = calcular_metricas(df_largo, df_asignacion, df_conflictos)
 
@@ -487,14 +435,15 @@ def escribir_calendario_excel(df_largo, df_asignacion, output_path):
 
     ws_met.merge_cells(start_row=1, start_column=1, end_row=1, end_column=3)
 
+    # Escribo el título de la hoja de métricas
     c = ws_met.cell(row=1, column=1)
     c.value = "Métricas de calidad del calendario"
     c.fill = fill_titulo
     c.font = font_titulo
     c.alignment = align_center
-
     ws_met.row_dimensions[1].height = 25
 
+    # Escribo la cabecera de la tabla de métricas
     for j, label in enumerate(["Categoría", "Métrica", "Valor"], start=1):
         cell = ws_met.cell(row=2, column=j)
         cell.value = label
@@ -507,6 +456,7 @@ def escribir_calendario_excel(df_largo, df_asignacion, output_path):
     categoria_actual = None
 
     for categoria, label, valor in metricas:
+        # Si la categoria cambia, escribo la nueva categoria en la primera columna y le doy formato especial
         if categoria != categoria_actual:
             cell_cat = ws_met.cell(row=fila, column=1)
             cell_cat.value = categoria
@@ -519,7 +469,7 @@ def escribir_calendario_excel(df_largo, df_asignacion, output_path):
         ws_met.cell(row=fila, column=2).value = label
         ws_met.cell(row=fila, column=3).value = valor
 
-        for j in range(1, 4):
+        for j in range(1, 4): # Pongo bordes y alineacion a todas las celdas de la fila
             ws_met.cell(row=fila, column=j).border = border
             ws_met.cell(row=fila, column=j).alignment = align_left
 
@@ -528,11 +478,12 @@ def escribir_calendario_excel(df_largo, df_asignacion, output_path):
     ws_met.column_dimensions["A"].width = 14
     ws_met.column_dimensions["B"].width = 38
     ws_met.column_dimensions["C"].width = 18
+
+    # Para ver siempre la cabecera de la tabla de métricas al deslizar
     ws_met.freeze_panes = "A3"
 
-    # ======================================================
     # Hoja resumen largo
-    # ======================================================
+    # ==================
 
     ws_res = wb.create_sheet(title="Resumen", index=2)
 
@@ -555,8 +506,9 @@ def escribir_calendario_excel(df_largo, df_asignacion, output_path):
         cell.alignment = align_center
         cell.border = border
 
+    # Ordeno el DataFrame por Titulacion, Semestre, Fecha y Hora para que quede bonito en la hoja de resumen
     df_res = df_largo[columnas_resumen].sort_values(
-        ["Titulacion", "Semestre", "Fecha", "Hora", "Examen"]
+        ["Titulacion", "Semestre", "Fecha", "Hora"]
     )
 
     for i, (_, row) in enumerate(df_res.iterrows(), start=2):
@@ -566,6 +518,7 @@ def escribir_calendario_excel(df_largo, df_asignacion, output_path):
             cell.alignment = align_left
             cell.border = border
 
+    # Ajuste de tamaños de columnas manualmente para que se vea bien el contenido
     widths = {
         "A": 14,
         "B": 12,
@@ -585,31 +538,22 @@ def escribir_calendario_excel(df_largo, df_asignacion, output_path):
     wb.save(output_path)
 
 
-# ==========================================================
 # MAIN
-# ==========================================================
+# =====
 
-def main():
-    df = leer_resultado()
-    df_largo = construir_formato_largo(df)
+def generar_calendario():
+    df_resultado = leer_resultado()
+    df_largo = construir_formato_largo(df_resultado)
 
     if df_largo.empty:
         raise RuntimeError(
             "No se ha podido construir el calendario. "
-            "Revisa la columna semestres_titulaciones."
+            "Revisa que en {RESULTADO_PATH} este la columna 'Semestres_titulaciones'."
         )
-    
-    df_asignacion = df.drop_duplicates(subset=["Examen"]).copy()
-    escribir_calendario_excel(df_largo, df_asignacion, OUTPUT_PATH)
 
-    print(f"Calendario guardado en: {OUTPUT_PATH}")
-    print("Hojas generadas:")
-    print("  - Metricas")
-    print("  - Conflictos")
-    print("  - Resumen")
-    for tit in sorted(df_largo["Titulacion"].unique()):
-        print(f"  - {tit}")
+    escribir_calendario_excel(df_largo, df_resultado, OUTPUT_PATH)
 
+    print(f"Calendario guardado en {OUTPUT_PATH}")
 
 if __name__ == "__main__":
-    main()
+    generar_calendario()
